@@ -1,0 +1,171 @@
+---
+import { PROJECTS } from '../data/site';
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section id="projects" class="section" aria-labelledby="projects-title">
+  <div class="container">
+    <header class="reveal">
+      <p class="kicker">{t('projects.kicker')}</p>
+      <h2 id="projects-title" class="section-title">{t('projects.title')}</h2>
+      <p class="section-subtitle">{t('projects.subtitle')}</p>
+    </header>
+
+    <div class="projects-grid">
+      {
+        PROJECTS.map((p) => (
+          <article class:list={['project-card', 'reveal', { featured: p.featured }]}>
+            <div class="project-top">
+              <span class="project-icon" aria-hidden="true">
+                <Icon name="code" />
+              </span>
+              <h3 class="project-title">{p.title}</h3>
+            </div>
+
+            <p class="project-desc">{p[lang].description}</p>
+
+            <ul class="project-tech" role="list" aria-label={t('projects.tech')}>
+              {p.tech.map((tech) => (
+                <li>{tech}</li>
+              ))}
+            </ul>
+
+            <div class="project-links">
+              {p.repo && (
+                <a
+                  class="project-link"
+                  href={p.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icon name="github" />
+                  <span>{t('projects.code')}</span>
+                  <span class="visually-hidden">— {p.title}</span>
+                </a>
+              )}
+              {p.demo && (
+                <a
+                  class="project-link"
+                  href={p.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icon name="external" />
+                  <span>{t('projects.demo')}</span>
+                  <span class="visually-hidden">— {p.title}</span>
+                </a>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 1.5rem;
+  }
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    transition: border-color var(--transition), transform var(--transition),
+      box-shadow var(--transition);
+  }
+  .project-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  /* Le projet "featured" prend 2 colonnes sur grand ecran */
+  .project-card.featured {
+    grid-column: span 1;
+  }
+  @media (min-width: 60rem) {
+    .project-card.featured {
+      grid-column: span 2;
+    }
+  }
+
+  .project-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .project-icon {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .project-icon :global(svg) {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+  .project-title {
+    font-size: var(--step-1);
+  }
+  .project-desc {
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    flex-grow: 1;
+  }
+
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 1.5rem;
+  }
+  .project-tech li {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .project-links {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: auto;
+  }
+  .project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--step--1);
+  }
+  .project-link :global(svg) {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+  .project-link:hover {
+    color: var(--accent);
+  }
+</style>

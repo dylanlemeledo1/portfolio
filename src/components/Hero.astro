@@ -1,0 +1,158 @@
+---
+import { SITE, SOCIALS } from '../data/site';
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero-inner">
+    <p class="availability">
+      <span class="dot" aria-hidden="true"></span>
+      {t('hero.available')}
+    </p>
+
+    <p class="hero-greeting">{t('hero.greeting')}</p>
+    <h1 id="hero-title" class="hero-name">{SITE.name}</h1>
+    <p class="hero-role">{t('hero.role')}</p>
+    <p class="hero-tagline">{t('hero.tagline')}</p>
+
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#projects">
+        {t('hero.cta.projects')}
+        <Icon name="arrowRight" />
+      </a>
+      <a class="btn btn-secondary" href="#contact">{t('hero.cta.contact')}</a>
+    </div>
+
+    <ul class="hero-socials" role="list">
+      {
+        SOCIALS.map((s) => (
+          <li>
+            <a
+              class="icon-btn"
+              href={s.url}
+              aria-label={s.name}
+              title={s.name}
+              {...(s.icon !== 'mail'
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
+            >
+              <Icon name={s.icon} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: clamp(3.5rem, 2rem + 8vw, 8rem) var(--section-gap);
+    overflow: hidden;
+  }
+  /* Halo decoratif subtil derriere le hero */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(90vw, 50rem);
+    aspect-ratio: 1;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--accent) 14%, transparent),
+      transparent 65%
+    );
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 52rem;
+  }
+
+  .availability {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-full);
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 1.75rem;
+  }
+  .dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 60%, transparent);
+    animation: pulse 2.4s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 55%, transparent);
+    }
+    70% {
+      box-shadow: 0 0 0 0.6rem transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  .hero-greeting {
+    font-size: var(--step-1);
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+  }
+  .hero-name {
+    font-size: var(--step-5);
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+  }
+  .hero-role {
+    font-size: var(--step-3);
+    font-weight: 700;
+    background: linear-gradient(
+      120deg,
+      var(--accent),
+      color-mix(in srgb, var(--accent) 50%, var(--text))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 1.5rem;
+    width: fit-content;
+  }
+  .hero-tagline {
+    font-size: var(--step-1);
+    color: var(--text-muted);
+    max-width: 44ch;
+    margin-bottom: 2.25rem;
+  }
+
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-socials {
+    display: flex;
+    gap: 0.6rem;
+  }
+</style>

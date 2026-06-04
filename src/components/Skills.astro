@@ -1,0 +1,85 @@
+---
+import { SKILLS } from '../data/site';
+import { useTranslations } from '../i18n/utils';
+import type { Lang, UIKey } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section id="skills" class="section" aria-labelledby="skills-title">
+  <div class="container">
+    <header class="reveal">
+      <p class="kicker">{t('skills.kicker')}</p>
+      <h2 id="skills-title" class="section-title">{t('skills.title')}</h2>
+      <p class="section-subtitle">{t('skills.subtitle')}</p>
+    </header>
+
+    <div class="skills-grid">
+      {
+        SKILLS.map((group) => (
+          <article class="skill-card reveal">
+            <h3 class="skill-cat">{t(group.categoryKey as UIKey)}</h3>
+            <ul class="skill-list" role="list">
+              {group.items.map((item) => (
+                <li class="skill-chip">{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.25rem;
+  }
+  .skill-card {
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    transition: border-color var(--transition), transform var(--transition),
+      box-shadow var(--transition);
+  }
+  .skill-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+  }
+  .skill-cat {
+    font-size: var(--step-1);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .skill-cat::before {
+    content: '';
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 3px;
+    background: var(--accent);
+  }
+  .skill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .skill-chip {
+    padding: 0.35rem 0.8rem;
+    border-radius: var(--radius-full);
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+</style>
