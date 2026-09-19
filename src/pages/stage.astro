@@ -1,0 +1,143 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { useTranslations, pageUrl } from '../i18n/utils';
+import { STAGE } from '../data/stage';
+import { SITE } from '../data/site';
+import Icon from '../components/Icon.astro';
+import ScreenshotGallery from '../components/ScreenshotGallery.astro';
+
+const lang = 'fr';
+const t = useTranslations(lang);
+const s = STAGE.fr;
+---
+
+<BaseLayout lang={lang} title={`${t('stage.title')} — ${SITE.name}`} description={s.intro}>
+  <section class="section" aria-labelledby="stage-title">
+    <div class="container">
+      <header class="reveal">
+        <p class="kicker">{t('stage.kicker')}</p>
+        <h1 id="stage-title" class="section-title">{t('stage.title')}</h1>
+        <p class="stage-meta">
+          {STAGE.company} · {STAGE.location} · {s.period} · {s.mode}
+        </p>
+      </header>
+
+      <div class="stage-body reveal">
+        <h2 class="stage-subtitle stage-subtitle-first">{t('stage.entreprise.title')}</h2>
+        <p class="stage-p">{s.entreprise}</p>
+
+        <h2 class="stage-subtitle">{t('stage.client.title')}</h2>
+        <p class="stage-p">{s.client}</p>
+
+        <p class="stage-p">{s.intro}</p>
+
+        <h2 class="stage-subtitle">{t('stage.missions.title')}</h2>
+        <ul class="mission-list" role="list">
+          {s.missions.map((m) => <li>{m}</li>)}
+        </ul>
+
+        <h2 class="stage-subtitle">{t('stage.screenshots.title')}</h2>
+        <ScreenshotGallery lang={lang} />
+
+        <h2 class="stage-subtitle">{t('stage.tech.title')}</h2>
+        <ul class="tech-chips" role="list">
+          {STAGE.tech.map((tech) => <li>{tech}</li>)}
+        </ul>
+
+        <div class="stage-links">
+          <a class="stage-link" href={pageUrl(lang, 'competences')}>
+            {t('stage.competences.link')}
+            <Icon name="arrowRight" />
+          </a>
+          <a class="stage-link" href={pageUrl(lang, 'autoeval')}>
+            {t('stage.bilan.link')}
+            <Icon name="arrowRight" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .stage-meta {
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-top: 0.5rem;
+  }
+  .stage-body {
+    margin-top: clamp(2rem, 1rem + 3vw, 3rem);
+  }
+  .stage-p {
+    color: var(--text-muted);
+    max-width: 68ch;
+    margin-bottom: 1.1rem;
+  }
+  .stage-subtitle {
+    font-size: var(--step-1);
+    margin-top: 2.5rem;
+    margin-bottom: 1.1rem;
+  }
+  .stage-subtitle-first {
+    margin-top: 0;
+  }
+  .mission-list {
+    list-style: none;
+    display: grid;
+    gap: 0.9rem;
+    margin-bottom: 1.5rem;
+    max-width: 68ch;
+  }
+  .mission-list li {
+    position: relative;
+    padding-left: 1.4rem;
+    color: var(--text-muted);
+  }
+  .mission-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+  .tech-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin-bottom: 2.5rem;
+  }
+  .tech-chips li {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .stage-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .stage-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    align-items: flex-start;
+  }
+  .stage-link:hover {
+    color: var(--accent);
+  }
+  .stage-link :global(svg) {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+</style>

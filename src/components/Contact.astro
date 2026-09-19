@@ -1,6 +1,6 @@
 ---
 import { SITE } from '../data/site';
-import { useTranslations } from '../i18n/utils';
+import { useTranslations, assetUrl } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 import Icon from './Icon.astro';
 
@@ -104,7 +104,7 @@ const action = hasFormspree ? `https://formspree.io/f/${SITE.formspreeId}` : '';
         SITE.cvUrl && (
           <a
             class="btn btn-secondary cv-btn"
-            href={`${import.meta.env.BASE_URL}${SITE.cvUrl}`}
+            href={assetUrl(SITE.cvUrl)}
             download
           >
             <Icon name="download" />

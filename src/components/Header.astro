@@ -1,6 +1,6 @@
 ---
 import { SITE } from '../data/site';
-import { useTranslations, homeUrl, alternateUrl } from '../i18n/utils';
+import { useTranslations, homeUrl, alternateUrl, pageUrl } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 import Icon from './Icon.astro';
 
@@ -11,10 +11,13 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const navLinks = [
-  { href: '#about', label: t('nav.about') },
-  { href: '#skills', label: t('nav.skills') },
-  { href: '#projects', label: t('nav.projects') },
-  { href: '#contact', label: t('nav.contact') },
+  { href: pageUrl(lang, 'parcours'), label: t('nav.parcours') },
+  { href: pageUrl(lang, 'stage'), label: t('nav.stage') },
+  { href: `${homeUrl(lang)}#projects`, label: t('nav.projects') },
+  { href: pageUrl(lang, 'competences'), label: t('nav.competences') },
+  { href: pageUrl(lang, 'veille'), label: t('nav.veille') },
+  { href: pageUrl(lang, 'autoeval'), label: t('nav.autoeval') },
+  { href: `${homeUrl(lang)}#contact`, label: t('nav.contact') },
 ];
 ---
 
@@ -38,7 +41,7 @@ const navLinks = [
     </nav>
 
     <div class="header-actions">
-      <a class="icon-btn lang-link" href={alternateUrl(lang)} aria-label={t('lang.switch')} title={t('lang.switch')}>
+      <a class="icon-btn lang-link" href={alternateUrl(lang, Astro.url.pathname)} aria-label={t('lang.switch')} title={t('lang.switch')}>
         <Icon name="globe" />
         <span aria-hidden="true">{lang === 'fr' ? 'EN' : 'FR'}</span>
       </a>
@@ -171,11 +174,13 @@ const navLinks = [
   }
   .nav-desktop a {
     display: inline-block;
-    padding: 0.5rem 0.9rem;
+    padding: 0.5rem 0.65rem;
     border-radius: var(--radius-sm);
     color: var(--text-muted);
     text-decoration: none;
     font-weight: 500;
+    font-size: var(--step--1);
+    white-space: nowrap;
     transition: color var(--transition), background-color var(--transition);
   }
   .nav-desktop a:hover {
@@ -245,19 +250,23 @@ const navLinks = [
     border-bottom: 1px solid var(--border);
   }
 
-  /* Responsive : bascule desktop/mobile */
-  @media (max-width: 48rem) {
+  /* Responsive : bascule desktop/mobile
+     Seuil plus large que la normale car la nav compte 7 entrees
+     (Parcours / Stage / Projets / Competences / Veille / Bilan / Contact). */
+  @media (max-width: 68rem) {
     .nav-desktop {
       display: none;
     }
     .menu-toggle {
       display: inline-flex;
     }
+  }
+  @media (max-width: 48rem) {
     .logo-name {
       display: none;
     }
   }
-  @media (min-width: 48.0625rem) {
+  @media (min-width: 68.0625rem) {
     .nav-mobile {
       display: none;
     }

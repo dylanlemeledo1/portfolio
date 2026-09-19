@@ -1,6 +1,6 @@
 ---
 import { SITE, SOCIALS } from '../data/site';
-import { useTranslations } from '../i18n/utils';
+import { useTranslations, pageUrl } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 import Icon from './Icon.astro';
 
@@ -28,6 +28,7 @@ const t = useTranslations(lang);
         {t('hero.cta.projects')}
         <Icon name="arrowRight" />
       </a>
+      <a class="btn btn-secondary" href={pageUrl(lang, 'stage')}>{t('hero.cta.stage')}</a>
       <a class="btn btn-secondary" href="#contact">{t('hero.cta.contact')}</a>
     </div>
 

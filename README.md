@@ -35,8 +35,13 @@ npm run preview  # previsualise le site final
 
 | Quoi | Ou |
 |------|-----|
-| **Nom, email, localisation, projets, competences, reseaux** | `src/data/site.ts` |
-| **Tous les textes FR / EN** | `src/i18n/ui.ts` |
+| **Nom, email, localisation, competences, reseaux, projets perso** | `src/data/site.ts` |
+| **Contenu de la page Stage** | `src/data/stage.ts` |
+| **Contenu de la page Compétences (mapping E5)** | `src/data/competences.ts` |
+| **Contenu de la page Veille techno** | `src/data/veille.ts` (ajoute une entree a chaque nouvelle decouverte) |
+| **Contenu de la page Autoévaluation** | `src/data/autoeval.ts` |
+| **Formation, atouts, texte de presentation (page Parcours & CV)** | `src/i18n/ui.ts` (cles `about.*`) |
+| **Tous les autres textes FR / EN (nav, boutons...)** | `src/i18n/ui.ts` |
 | **Couleurs, polices, espacements** | `src/styles/global.css` (variables `:root`) |
 | **Pseudo GitHub + nom du depot** | `astro.config.mjs` (en haut) |
 
@@ -51,9 +56,8 @@ npm run preview  # previsualise le site final
 
 ### Ajouter ton CV / ta photo
 
-- CV : place `cv.pdf` dans `public/`, puis `cvUrl: 'cv.pdf'` dans `src/data/site.ts`.
-- Photo : `public/photo.png` est deja la (recuperee de l'ancien portfolio). Voir
-  la section "Avatar" plus bas pour l'activer.
+- CV : le tien est déjà copié dans `public/cv.pdf` (`cvUrl: 'cv.pdf'` dans `src/data/site.ts`), le bouton de téléchargement s'affiche sur la page Parcours & CV et sur le formulaire de contact.
+- Photo : pas de photo pour l'instant (le design utilise juste tes initiales "DL"). Pour en ajouter une : mets ton fichier dans `public/photo.jpg`, puis remplace le `<div class="avatar">` de `src/components/About.astro` par une balise `<img src="/photo.jpg" ... />`.
 
 ---
 
@@ -82,10 +86,27 @@ npm run preview  # previsualise le site final
 
 ```
 src/
-├── data/site.ts        -> TES infos (a editer)
-├── i18n/               -> traductions FR/EN + utilitaires
-├── layouts/            -> gabarit de base (SEO, theme, a11y)
-├── components/         -> Header, Hero, About, Skills, Projects, Contact, Footer
-├── pages/              -> index.astro (FR), en/index.astro (EN), 404
-└── styles/global.css   -> design system
+├── data/
+│   ├── site.ts          -> TES infos, competences, projets perso (a editer)
+│   ├── stage.ts          -> contenu de la page Stage
+│   ├── competences.ts     -> mapping des 6 competences E5
+│   ├── veille.ts          -> entrees de veille technologique
+│   └── autoeval.ts        -> contenu de la page Autoevaluation
+├── i18n/                -> traductions FR/EN + utilitaires (pageUrl, homeUrl...)
+├── layouts/              -> gabarit de base (SEO, theme, a11y)
+├── components/           -> Header, Hero, About, Skills, Projects, Contact, Footer
+├── pages/                -> Accueil, Parcours, Stage, Competences, Veille, Autoeval, 404
+│   └── en/                -> memes pages, en anglais
+└── styles/global.css     -> design system
 ```
+
+### Les 7 pages du site
+
+| Page | FR | EN | Pour quoi |
+|------|----|----|-----------|
+| Accueil | `/` | `/en/` | Hero + projets perso + contact |
+| Parcours & CV | `/parcours/` | `/en/parcours/` | Formation, atouts, CV telechargeable |
+| Stage | `/stage/` | `/en/stage/` | Ta realisation professionnelle (E5/E6) |
+| Compétences | `/competences/` | `/en/competences/` | Les 6 competences E5 + stack technique |
+| Veille techno | `/veille/` | `/en/veille/` | Competence C6 — a completer regulierement |
+| Autoévaluation | `/autoeval/` | `/en/autoeval/` | Bilan de stage |

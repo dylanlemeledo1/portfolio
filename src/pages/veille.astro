@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { useTranslations } from '../i18n/utils';
+import { VEILLE_AXIS, VEILLE_ENTRIES } from '../data/veille';
+import { SITE } from '../data/site';
+import Icon from '../components/Icon.astro';
+
+const lang = 'fr';
+const t = useTranslations(lang);
+const subtitle = t('veille.subtitle').replace('{axis}', VEILLE_AXIS.fr);
+---
+
+<BaseLayout lang={lang} title={`${t('veille.title')} — ${SITE.name}`} description={subtitle}>
+  <section class="section" aria-labelledby="veille-title">
+    <div class="container">
+      <header class="reveal">
+        <p class="kicker">{t('veille.kicker')}</p>
+        <h1 id="veille-title" class="section-title">{t('veille.title')}</h1>
+        <p class="section-subtitle veille-subtitle">{subtitle}</p>
+      </header>
+
+      <div class="veille-list">
+        {
+          VEILLE_ENTRIES.map((entry) => (
+            <article class="veille-card reveal">
+              <p class="veille-date">{entry.date}</p>
+              <h2 class="veille-title-item">{entry.fr.title}</h2>
+              <p class="veille-summary">{entry.fr.summary}</p>
+              <a
+                class="veille-source"
+                href={entry.source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Icon name="external" />
+                <span>
+                  {t('veille.source')} : {entry.source.label}
+                </span>
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .veille-subtitle {
+    max-width: 60ch;
+  }
+  .veille-list {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 52rem;
+  }
+  .veille-card {
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+  }
+  .veille-date {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-faint);
+    margin-bottom: 0.5rem;
+  }
+  .veille-title-item {
+    font-size: var(--step-1);
+    margin-bottom: 0.75rem;
+  }
+  .veille-summary {
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+  .veille-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--step--1);
+  }
+  .veille-source:hover {
+    color: var(--accent);
+  }
+  .veille-source :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+</style>

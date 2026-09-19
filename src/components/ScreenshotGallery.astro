@@ -1,0 +1,162 @@
+---
+import { SCREENSHOT_GROUPS } from '../data/stage-screenshots';
+import { useTranslations, assetUrl } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<div class="screenshots">
+  {
+    SCREENSHOT_GROUPS.map((group) => (
+      <div class="screenshot-group">
+        <h3 class="screenshot-group-title">{lang === 'fr' ? group.fr : group.en}</h3>
+        <div class="screenshot-grid">
+          {group.items.map((item) => {
+            const caption = lang === 'fr' ? item.fr : item.en;
+            const src = assetUrl(`images/stage/${item.file}`);
+            return (
+              <button type="button" class="screenshot-thumb" data-src={src} data-caption={caption}>
+                <img src={src} alt={caption} loading="lazy" decoding="async" width="1100" height="620" />
+                <span class="screenshot-caption">{caption}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<dialog id="screenshot-lightbox" class="lightbox" aria-label={t('stage.screenshots.title')}>
+  <button type="button" class="lightbox-close" id="lightbox-close" aria-label={t('stage.screenshots.close')}>
+    <Icon name="close" />
+  </button>
+  <img id="lightbox-img" src="" alt="" />
+  <p id="lightbox-caption" class="lightbox-caption"></p>
+</dialog>
+
+<script is:inline>
+  (function () {
+    var dialog = document.getElementById('screenshot-lightbox');
+    var img = document.getElementById('lightbox-img');
+    var caption = document.getElementById('lightbox-caption');
+    var closeBtn = document.getElementById('lightbox-close');
+    if (!dialog || !img || !caption || !closeBtn) return;
+
+    document.querySelectorAll('.screenshot-thumb').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        img.src = btn.getAttribute('data-src') || '';
+        img.alt = btn.getAttribute('data-caption') || '';
+        caption.textContent = btn.getAttribute('data-caption') || '';
+        dialog.showModal();
+      });
+    });
+
+    closeBtn.addEventListener('click', function () {
+      dialog.close();
+    });
+    dialog.addEventListener('click', function (e) {
+      if (e.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', function () {
+      img.src = '';
+    });
+  })();
+</script>
+
+<style>
+  .screenshot-group {
+    margin-bottom: 2.5rem;
+  }
+  .screenshot-group-title {
+    font-size: var(--step-0);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .screenshot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 1rem;
+  }
+  .screenshot-thumb {
+    display: block;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    overflow: hidden;
+    cursor: zoom-in;
+    text-align: left;
+    font-family: inherit;
+    transition: border-color var(--transition), transform var(--transition);
+  }
+  .screenshot-thumb:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .screenshot-thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1100 / 620;
+    object-fit: cover;
+    object-position: top;
+    border-bottom: 1px solid var(--border);
+  }
+  .screenshot-caption {
+    display: block;
+    padding: 0.6rem 0.75rem;
+    font-size: var(--step--1);
+    color: var(--text-muted);
+  }
+
+  .lightbox {
+    border: none;
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    color: var(--text);
+    padding: 0;
+    max-width: min(92vw, 70rem);
+    max-height: 90vh;
+    overflow: auto;
+  }
+  .lightbox::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+  }
+  .lightbox img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .lightbox-caption {
+    padding: 0.85rem 1.1rem;
+    font-size: var(--step--1);
+    color: var(--text-muted);
+  }
+  .lightbox-close {
+    position: sticky;
+    top: 0.75rem;
+    left: calc(100% - 3rem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: var(--radius-full);
+    border: none;
+    background: rgba(10, 10, 11, 0.65);
+    color: #fff;
+    cursor: pointer;
+    z-index: 1;
+  }
+  .lightbox-close:hover {
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+</style>

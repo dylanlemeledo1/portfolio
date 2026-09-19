@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { useTranslations } from '../../i18n/utils';
+import { AUTOEVAL } from '../../data/autoeval';
+import { SITE } from '../../data/site';
+
+const lang = 'en';
+const t = useTranslations(lang);
+---
+
+<BaseLayout
+  lang={lang}
+  title={`${t('autoeval.title')} — ${SITE.name}`}
+  description={t('autoeval.subtitle')}
+>
+  <section class="section" aria-labelledby="autoeval-title">
+    <div class="container section-narrow">
+      <header class="reveal">
+        <p class="kicker">{t('autoeval.kicker')}</p>
+        <h1 id="autoeval-title" class="section-title">{t('autoeval.title')}</h1>
+        <p class="section-subtitle">{t('autoeval.subtitle')}</p>
+      </header>
+
+      <div class="autoeval-list reveal">
+        {
+          AUTOEVAL.en.sections.map((sec) => (
+            <div class="autoeval-item">
+              <h2 class="autoeval-item-title">{sec.title}</h2>
+              <p class="autoeval-item-text">{sec.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .autoeval-list {
+    display: grid;
+    gap: 2.25rem;
+    margin-top: 1rem;
+  }
+  .autoeval-item-title {
+    font-size: var(--step-1);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .autoeval-item-text {
+    color: var(--text-muted);
+  }
+</style>

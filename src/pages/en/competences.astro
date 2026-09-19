@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Skills from '../../components/Skills.astro';
+import { useTranslations } from '../../i18n/utils';
+import { COMPETENCES } from '../../data/competences';
+import { SITE } from '../../data/site';
+
+const lang = 'en';
+const t = useTranslations(lang);
+---
+
+<BaseLayout
+  lang={lang}
+  title={`${t('competences.title')} — ${SITE.name}`}
+  description={t('competences.subtitle')}
+>
+  <section class="section" aria-labelledby="competences-title">
+    <div class="container">
+      <header class="reveal">
+        <p class="kicker">{t('competences.kicker')}</p>
+        <h1 id="competences-title" class="section-title">{t('competences.title')}</h1>
+        <p class="section-subtitle">{t('competences.subtitle')}</p>
+      </header>
+
+      <div class="competences-grid">
+        {
+          COMPETENCES.map((c) => (
+            <article class="competence-card reveal">
+              <p class="competence-code">{c.code}</p>
+              <h2 class="competence-title">{c.en.title}</h2>
+              <p class="competence-example">{c.en.example}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <Skills lang={lang} />
+</BaseLayout>
+
+<style>
+  .competences-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: 1.25rem;
+  }
+  .competence-card {
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    transition: border-color var(--transition), transform var(--transition),
+      box-shadow var(--transition);
+  }
+  .competence-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+  }
+  .competence-code {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 0.15rem 0.55rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.85rem;
+  }
+  .competence-title {
+    font-size: var(--step-0);
+    margin-bottom: 0.6rem;
+  }
+  .competence-example {
+    color: var(--text-muted);
+    font-size: var(--step--1);
+  }
+</style>

@@ -6,16 +6,20 @@ import Icon from './Icon.astro';
 
 interface Props {
   lang: Lang;
+  /** 'h1' quand About est le titre principal de la page (ex: /parcours),
+   *  'h2' (defaut) quand il suit un h1 deja present (ex: le Hero de l'accueil). */
+  headingLevel?: 'h1' | 'h2';
 }
-const { lang } = Astro.props;
+const { lang, headingLevel = 'h2' } = Astro.props;
 const t = useTranslations(lang);
+const Heading = headingLevel;
 ---
 
 <section id="about" class="section" aria-labelledby="about-title">
   <div class="container about-grid">
     <div class="about-text reveal">
       <p class="kicker">{t('about.kicker')}</p>
-      <h2 id="about-title" class="section-title">{t('about.title')}</h2>
+      <Heading id="about-title" class="section-title">{t('about.title')}</Heading>
       <p class="about-p">{t('about.p1')}</p>
       <p class="about-p">{t('about.p2')}</p>
       <p class="about-p">{t('about.p3')}</p>

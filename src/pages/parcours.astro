@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import About from '../components/About.astro';
+import { useTranslations, assetUrl } from '../i18n/utils';
+import { SITE } from '../data/site';
+
+const lang = 'fr';
+const t = useTranslations(lang);
+
+const atouts = [
+  'Calme',
+  'Sérieux',
+  'Organisé',
+  'Travail en équipe',
+  'Mémoire',
+  'Musique',
+  'Sport',
+  'Jeux vidéo',
+];
+---
+
+<BaseLayout
+  lang={lang}
+  title={`${t('about.title')} — ${SITE.name}`}
+  description={t('about.p1')}
+>
+  <About lang={lang} headingLevel="h1" />
+
+  <section class="section formation-section" aria-labelledby="formation-title">
+    <div class="container">
+      <h2 id="formation-title" class="subsection-title">{t('about.formation.title')}</h2>
+      <ul class="formation-list" role="list">
+        <li>
+          <p class="formation-name">{t('about.formation.bts')}</p>
+          <p class="formation-detail">{t('about.formation.bts.detail')}</p>
+        </li>
+        <li>
+          <p class="formation-name">{t('about.formation.iut')}</p>
+          <p class="formation-detail">{t('about.formation.iut.detail')}</p>
+        </li>
+      </ul>
+
+      <h2 class="subsection-title atouts-title">{t('about.atouts.title')}</h2>
+      <ul class="chip-list" role="list">
+        {atouts.map((a) => <li class="chip">{a}</li>)}
+      </ul>
+
+      {
+        SITE.cvUrl && (
+          <a
+            class="btn btn-primary cv-btn"
+            href={assetUrl(SITE.cvUrl)}
+            download
+          >
+            {t('contact.downloadCv')}
+          </a>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .subsection-title {
+    font-size: var(--step-2);
+    margin-bottom: 1.25rem;
+  }
+  .atouts-title {
+    margin-top: 3rem;
+  }
+  .formation-list {
+    display: grid;
+    gap: 1rem;
+    list-style: none;
+    max-width: 40rem;
+  }
+  .formation-list li {
+    padding: 1.1rem 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+  }
+  .formation-name {
+    font-weight: 700;
+  }
+  .formation-detail {
+    color: var(--text-muted);
+    font-size: var(--step--1);
+    margin-top: 0.25rem;
+  }
+  .chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+  }
+  .chip {
+    padding: 0.35rem 0.8rem;
+    border-radius: var(--radius-full);
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .cv-btn {
+    margin-top: 2.5rem;
+  }
+</style>

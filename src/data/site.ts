@@ -1,17 +1,20 @@
 // ============================================================================
-//  >>> FICHIER PRINCIPAL A PERSONNALISER <<<
-//  Modifie ce fichier pour mettre TES infos. Pas besoin de toucher au reste.
+//  FICHIER PRINCIPAL DE DONNEES DU SITE
+//  Modifie ce fichier pour mettre a jour tes infos, tes competences ou tes
+//  projets. Le contenu du stage / veille / autoeval / competences E5 vit
+//  dans ses propres fichiers : src/data/stage.ts, competences.ts, veille.ts,
+//  autoeval.ts.
 // ============================================================================
 
 export const SITE = {
-  /** Ton nom complet, affiche partout */
-  name: 'Prenom Nom',
-  /** Tes initiales pour le logo */
-  initials: 'PN',
-  /** Ton email de contact public */
-  email: 'ton.email@exemple.com',
-  /** Ta ville / localisation */
-  location: 'Paris, France',
+  /** Nom complet, affiche partout */
+  name: 'Dylan Le Mélédo',
+  /** Initiales pour le logo */
+  initials: 'DL',
+  /** Email de contact public */
+  email: 'dylanlemeledo1@gmail.com',
+  /** Ville / localisation */
+  location: 'Saffré, France',
   /**
    * ID du formulaire Formspree (gratuit) pour recevoir les messages du
    * formulaire de contact. Cree un compte sur https://formspree.io,
@@ -20,101 +23,160 @@ export const SITE = {
    */
   formspreeId: 'YOUR_FORM_ID',
   /**
-   * Lien vers ton CV (optionnel). Place ton fichier dans /public/cv.pdf
-   * puis mets cvUrl: 'cv.pdf'. Laisse vide ('') pour cacher le bouton.
+   * Lien vers le CV (le fichier reel de Dylan a ete copie dans /public/cv.pdf).
+   * Laisse vide ('') pour cacher le bouton.
    */
-  cvUrl: '',
+  cvUrl: 'cv.pdf',
 } as const;
 
 /** Reseaux sociaux affiches dans le header, le hero et le footer */
 export const SOCIALS = [
-  { name: 'GitHub', url: 'https://github.com/ton-pseudo', icon: 'github' },
-  { name: 'LinkedIn', url: 'https://www.linkedin.com/in/ton-profil', icon: 'linkedin' },
+  { name: 'GitHub', url: 'https://github.com/dylanlemeledo1', icon: 'github' },
+  {
+    name: 'LinkedIn',
+    url: 'https://www.linkedin.com/in/dylan-le-mélédo-736859434/',
+    icon: 'linkedin',
+  },
   { name: 'Email', url: `mailto:${SITE.email}`, icon: 'mail' },
 ] as const;
 
 /**
- * Tes competences, groupees par categorie.
- * Les libelles de categorie sont traduits dans src/i18n/ui.ts (skills.*).
+ * Competences techniques, groupees par categorie. Affichees sur la page
+ * /competences. Les libelles de categorie sont traduits dans src/i18n/ui.ts
+ * (skills.*).
  */
 export const SKILLS = [
   {
+    categoryKey: 'skills.languages',
+    items: ['HTML5', 'CSS3', 'JavaScript', 'PHP', 'Java', 'Python', 'C#', 'C++', 'SQL'],
+  },
+  {
     categoryKey: 'skills.frontend',
-    items: ['HTML5', 'CSS3', 'JavaScript', 'TypeScript', 'React', 'Astro', 'Tailwind'],
+    items: ['Bootstrap', 'Astro', 'Responsive design'],
   },
   {
     categoryKey: 'skills.backend',
-    items: ['Node.js', 'Express', 'Python', 'API REST', 'PHP'],
-  },
-  {
-    categoryKey: 'skills.database',
-    items: ['PostgreSQL', 'MongoDB', 'MySQL', 'SQLite'],
+    items: ['API REST', 'Dolibarr', 'SGBD', 'Modélisation Merise (MCD)'],
   },
   {
     categoryKey: 'skills.tools',
-    items: ['Git', 'GitHub', 'Docker', 'Linux', 'Figma', 'VS Code'],
+    items: ['Git', 'GitLab', 'VS Code', 'WAMP / phpMyAdmin', 'Postman'],
   },
 ] as const;
 
 /**
- * Tes projets. Ajoute / supprime des entrees librement.
+ * Projets personnels. Ajoute / supprime des entrees librement.
  * - featured: true => mis en avant en grand
  * - repo / demo: laisse '' pour cacher le bouton correspondant
+ *   (ajoute tes liens GitHub / demo des que tu les as)
  */
 export const PROJECTS = [
   {
-    id: 'projet-1',
-    title: 'TaskFlow — Gestionnaire de taches',
+    id: 'neon-void',
+    title: 'Neon Void',
     fr: {
       description:
-        "Application web fullstack de gestion de taches avec authentification, " +
-        "tableaux de bord en temps reel et collaboration en equipe. " +
-        "Mon premier gros projet de A a Z.",
+        'Jeu de tir spatial (shooter) en JavaScript et Canvas HTML5 purs, sans ' +
+        "framework ni dependance. Vagues d'ennemis avec boss, 4 niveaux d'arme, " +
+        'power-ups, sons generes en direct via Web Audio, meilleur score ' +
+        'sauvegarde en local. Jouable au clavier comme au tactile sur mobile.',
     },
     en: {
       description:
-        "Fullstack task management web app with authentication, real-time " +
-        "dashboards and team collaboration. My first big end-to-end project.",
+        'A space shooter built with plain JavaScript and HTML5 Canvas, no ' +
+        'framework or dependency. Enemy waves with boss fights, 4 weapon ' +
+        'levels, power-ups, sounds generated live via the Web Audio API, ' +
+        'high score saved locally. Playable with keyboard or touch on mobile.',
     },
-    tech: ['React', 'Node.js', 'PostgreSQL', 'Docker'],
-    repo: 'https://github.com/ton-pseudo/taskflow',
-    demo: '',
-    featured: true,
-  },
-  {
-    id: 'projet-2',
-    title: 'DevBlog — Blog technique',
-    fr: {
-      description:
-        "Plateforme de blog avec editeur Markdown, systeme de commentaires " +
-        "et mode sombre. Concu pour etre rapide et 100% accessible.",
-    },
-    en: {
-      description:
-        "Blogging platform with a Markdown editor, comment system and dark " +
-        "mode. Built to be fast and 100% accessible.",
-    },
-    tech: ['Astro', 'TypeScript', 'Tailwind'],
-    repo: 'https://github.com/ton-pseudo/devblog',
-    demo: '',
-    featured: true,
-  },
-  {
-    id: 'projet-3',
-    title: 'WeatherNow — Meteo en direct',
-    fr: {
-      description:
-        "Application meteo consommant une API externe, avec geolocalisation, " +
-        "previsions sur 7 jours et graphiques interactifs.",
-    },
-    en: {
-      description:
-        "Weather app consuming an external API, with geolocation, 7-day " +
-        "forecast and interactive charts.",
-    },
-    tech: ['JavaScript', 'API REST', 'CSS3'],
-    repo: 'https://github.com/ton-pseudo/weathernow',
+    tech: ['JavaScript', 'Canvas API', 'Web Audio API'],
+    repo: '',
     demo: '',
     featured: false,
+  },
+  {
+    id: 'nova-studio',
+    title: 'Nova Studio',
+    fr: {
+      description:
+        "Site vitrine immersif pour un studio creatif fictif : mise en scene " +
+        "avec une scene 3D interactive (Three.js / React Three Fiber), " +
+        "animations au scroll et micro-interactions (Framer Motion). " +
+        "Un terrain d'exploration pour le front-end moderne.",
+    },
+    en: {
+      description:
+        'An immersive landing page for a fictional creative studio: an ' +
+        'interactive 3D scene (Three.js / React Three Fiber), scroll-based ' +
+        'storytelling and micro-interactions (Framer Motion). A playground ' +
+        'for modern front-end techniques.',
+    },
+    tech: ['Next.js', 'React', 'Three.js', 'Framer Motion', 'Tailwind CSS'],
+    repo: '',
+    demo: '',
+    featured: true,
+  },
+  {
+    id: 'nebula',
+    title: 'Nebula',
+    fr: {
+      description:
+        'Site marketing complet pour un produit SaaS fictif : accueil, ' +
+        'fonctionnalités, tarifs, démo, changelog, connexion/inscription — ' +
+        'un site multipage en Next.js avec animations Framer Motion et ' +
+        'TypeScript de bout en bout.',
+    },
+    en: {
+      description:
+        'A full marketing site for a fictional SaaS product: home, ' +
+        'features, pricing, demo, changelog, login/signup — a multi-page ' +
+        'Next.js build with Framer Motion animations and end-to-end ' +
+        'TypeScript.',
+    },
+    tech: ['Next.js', 'React', 'TypeScript', 'Framer Motion', 'Tailwind CSS'],
+    repo: 'https://github.com/dylanlemeledo1/nebula',
+    demo: 'https://test-gunstaz.vercel.app',
+    featured: true,
+  },
+  {
+    id: 'citypunks',
+    title: 'Citypunks',
+    fr: {
+      description:
+        "Landing page pour un jeu de rôle fictif en monde ouvert, univers " +
+        "cyberpunk : mise en page à fort impact visuel en HTML/CSS/JS, " +
+        "pensée pour donner envie de découvrir le jeu.",
+    },
+    en: {
+      description:
+        "A landing page for a fictional open-world cyberpunk RPG: a " +
+        "visually bold HTML/CSS/JS page built to sell the game's " +
+        "atmosphere.",
+    },
+    tech: ['HTML5', 'CSS3', 'JavaScript'],
+    repo: 'https://github.com/dylanlemeledo1/citypunks',
+    demo: '',
+    featured: false,
+  },
+  {
+    id: 'auralis',
+    title: 'Auralis',
+    fr: {
+      description:
+        "Visualiseur audio réactif : on charge un morceau ou on active le " +
+        "micro, et un visuel généré en Canvas (particules, spectre radial, " +
+        "cœur pulsant) réagit en temps réel aux basses, mediums et aigus. " +
+        "100% JavaScript natif, sans librairie.",
+    },
+    en: {
+      description:
+        'An audio-reactive visualizer: load a track or enable your mic, ' +
+        'and a Canvas-generated visual (particles, radial spectrum, ' +
+        'pulsing core) reacts in real time to bass, mids and treble. ' +
+        '100% vanilla JavaScript, no library.',
+    },
+    tech: ['JavaScript', 'Web Audio API', 'Canvas API'],
+    repo: '',
+    demo: 'https://claude.ai/artifact/BbUxHog4wB17nvVg3Wpp2j',
+    featured: true,
   },
 ] as const;
