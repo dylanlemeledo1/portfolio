@@ -36,9 +36,9 @@ export const ui = {
     'hero.role': 'Développeur Web',
     'hero.tagline':
       "Étudiant en BTS SIO option SLAM au lycée Carcouët, à la recherche " +
-      "d'une alternance. Je conçois des sites et applications web, du " +
+      "d'un stage. Je conçois des sites et applications web, du " +
       "front-end jusqu'à la base de données.",
-    'hero.available': "Disponible pour une alternance",
+    'hero.available': "Disponible pour un stage",
     'hero.cta.projects': 'Voir mes projets',
     'hero.cta.stage': 'Mon stage',
     'hero.cta.contact': 'Me contacter',
@@ -122,7 +122,7 @@ export const ui = {
     'contact.title': 'Travaillons ensemble',
     'contact.kicker': 'Contact',
     'contact.subtitle':
-      'Une question, une opportunité, une alternance ? Écris-moi, je réponds vite.',
+      'Une question, une opportunité, un stage ? Écris-moi, je réponds vite.',
     'contact.name': 'Nom',
     'contact.email': 'Email',
     'contact.message': 'Message',
@@ -170,9 +170,9 @@ export const ui = {
     'hero.role': 'Web Developer',
     'hero.tagline':
       "A BTS SIO (SLAM track) student at lycée Carcouët, looking for an " +
-      "apprenticeship. I build websites and web apps, from the front end " +
+      "internship. I build websites and web apps, from the front end " +
       "down to the database.",
-    'hero.available': 'Available for an apprenticeship',
+    'hero.available': 'Available for an internship',
     'hero.cta.projects': 'View my projects',
     'hero.cta.stage': 'My internship',
     'hero.cta.contact': 'Get in touch',
@@ -255,7 +255,7 @@ export const ui = {
     'contact.title': "Let's work together",
     'contact.kicker': 'Contact',
     'contact.subtitle':
-      'A question, an opportunity, an apprenticeship? Write to me, I reply fast.',
+      'A question, an opportunity, an internship? Write to me, I reply fast.',
     'contact.name': 'Name',
     'contact.email': 'Email',
     'contact.message': 'Message',
