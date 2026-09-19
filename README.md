@@ -57,7 +57,7 @@ npm run preview  # previsualise le site final
 ### Ajouter ton CV / ta photo
 
 - CV : le tien est déjà copié dans `public/cv.pdf` (`cvUrl: 'cv.pdf'` dans `src/data/site.ts`), le bouton de téléchargement s'affiche sur la page Parcours & CV et sur le formulaire de contact.
-- Photo : pas de photo pour l'instant (le design utilise juste tes initiales "DL"). Pour en ajouter une : mets ton fichier dans `public/photo.jpg`, puis remplace le `<div class="avatar">` de `src/components/About.astro` par une balise `<img src="/photo.jpg" ... />`.
+- Photo : ta photo est déjà en place (`public/photo.webp`, référencée via `photoUrl` dans `src/data/site.ts`). Pour la changer : remplace le fichier et garde le même nom, ou mets `photoUrl` à jour. Pour revenir aux initiales "DL" : mets `photoUrl: ''`.
 
 ---
 

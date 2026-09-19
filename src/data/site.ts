@@ -27,6 +27,11 @@ export const SITE = {
    * Laisse vide ('') pour cacher le bouton.
    */
   cvUrl: 'cv.pdf',
+  /**
+   * Photo de profil (dans /public). Laisse vide ('') pour revenir aux
+   * initiales par defaut.
+   */
+  photoUrl: 'photo.webp',
 } as const;
 
 /** Reseaux sociaux affiches dans le header, le hero et le footer */

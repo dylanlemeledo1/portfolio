@@ -24,7 +24,7 @@ const t = useTranslations(lang);
     <p class="hero-tagline">{t('hero.tagline')}</p>
 
     <div class="hero-cta">
-      <a class="btn btn-primary" href="#projects">
+      <a class="btn btn-primary" href={pageUrl(lang, 'projets')}>
         {t('hero.cta.projects')}
         <Icon name="arrowRight" />
       </a>

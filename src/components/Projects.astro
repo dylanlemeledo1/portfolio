@@ -6,16 +6,18 @@ import Icon from './Icon.astro';
 
 interface Props {
   lang: Lang;
+  headingLevel?: 'h1' | 'h2';
 }
-const { lang } = Astro.props;
+const { lang, headingLevel = 'h2' } = Astro.props;
 const t = useTranslations(lang);
+const Heading = headingLevel;
 ---
 
 <section id="projects" class="section" aria-labelledby="projects-title">
   <div class="container">
     <header class="reveal">
       <p class="kicker">{t('projects.kicker')}</p>
-      <h2 id="projects-title" class="section-title">{t('projects.title')}</h2>
+      <Heading id="projects-title" class="section-title">{t('projects.title')}</Heading>
       <p class="section-subtitle">{t('projects.subtitle')}</p>
     </header>
 

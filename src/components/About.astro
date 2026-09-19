@@ -1,6 +1,6 @@
 ---
 import { SITE } from '../data/site';
-import { useTranslations } from '../i18n/utils';
+import { useTranslations, assetUrl } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 import Icon from './Icon.astro';
 
@@ -31,7 +31,23 @@ const Heading = headingLevel;
     </div>
 
     <aside class="about-card reveal" aria-label={t('about.title')}>
-      <div class="avatar" aria-hidden="true">{SITE.initials}</div>
+      {
+        SITE.photoUrl ? (
+          <img
+            class="avatar avatar-photo"
+            src={assetUrl(SITE.photoUrl)}
+            alt={SITE.name}
+            width="160"
+            height="160"
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <div class="avatar" aria-hidden="true">
+            {SITE.initials}
+          </div>
+        )
+      }
       <p class="about-name">{SITE.name}</p>
       <p class="about-job">{t('hero.role')}</p>
       <hr />
@@ -96,6 +112,12 @@ const Heading = headingLevel;
     color: var(--accent-contrast);
     font-size: var(--step-2);
     font-weight: 800;
+  }
+  .avatar-photo {
+    display: block;
+    object-fit: cover;
+    object-position: center top;
+    border: 2px solid var(--border);
   }
   .about-name {
     font-weight: 700;

@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Projects from '../../components/Projects.astro';
+import { useTranslations } from '../../i18n/utils';
+import { SITE } from '../../data/site';
+
+const lang = 'en';
+const t = useTranslations(lang);
+---
+
+<BaseLayout
+  lang={lang}
+  title={`${t('projects.title')} — ${SITE.name}`}
+  description={t('projects.subtitle')}
+>
+  <Projects lang={lang} headingLevel="h1" />
+</BaseLayout>
