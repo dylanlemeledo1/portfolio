@@ -387,3 +387,80 @@ body::before {
   transform: scaleX(1);
   transform-origin: left;
 }
+
+/* ==========================================================================
+   IMPRESSION — le jury peut imprimer une page : fond blanc, pas de nav,
+   tout le contenu visible (meme les sections pas encore "reveal"ees par le JS).
+   ========================================================================== */
+@media print {
+  body::before {
+    display: none !important;
+  }
+
+  .site-header,
+  .site-footer,
+  .hero-cta,
+  .hero-socials,
+  .availability,
+  .icon-btn,
+  .cv-btn,
+  .project-links,
+  .stage-links,
+  .veille-source,
+  .screenshot-grid,
+  .lightbox {
+    display: none !important;
+  }
+
+  :root,
+  [data-theme='dark'] {
+    --bg: #ffffff;
+    --bg-soft: #f4f4f5;
+    --bg-elevated: #ffffff;
+    --text: #000000;
+    --text-muted: #2a2a2a;
+    --text-faint: #4a4a4a;
+    --border: #cccccc;
+    --border-strong: #999999;
+    --accent: #000000;
+    --accent-contrast: #ffffff;
+  }
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  body {
+    font-size: 11pt;
+  }
+
+  /* Le contenu doit etre visible meme si le JS de reveal-au-scroll n'a pas
+     encore tourne sur cette section au moment de l'impression */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  a {
+    color: #000 !important;
+    text-decoration: underline;
+  }
+
+  .competence-card,
+  .veille-card,
+  .project-card,
+  .formation-list li {
+    break-inside: avoid;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+}

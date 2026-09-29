@@ -1,13 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { useTranslations } from '../i18n/utils';
-import { VEILLE_AXIS, VEILLE_ENTRIES } from '../data/veille';
+import { useTranslations, formatYearMonth } from '../i18n/utils';
+import { VEILLE_AXIS, VEILLE_ENTRIES, VEILLE_LAST_UPDATED } from '../data/veille';
 import { SITE } from '../data/site';
 import Icon from '../components/Icon.astro';
 
 const lang = 'fr';
 const t = useTranslations(lang);
 const subtitle = t('veille.subtitle').replace('{axis}', VEILLE_AXIS.fr);
+const lastUpdated = formatYearMonth(VEILLE_LAST_UPDATED, lang);
 ---
 
 <BaseLayout lang={lang} title={`${t('veille.title')} — ${SITE.name}`} description={subtitle}>
@@ -17,6 +18,7 @@ const subtitle = t('veille.subtitle').replace('{axis}', VEILLE_AXIS.fr);
         <p class="kicker">{t('veille.kicker')}</p>
         <h1 id="veille-title" class="section-title">{t('veille.title')}</h1>
         <p class="section-subtitle veille-subtitle">{subtitle}</p>
+        <p class="veille-updated">{t('veille.updated').replace('{date}', lastUpdated)}</p>
       </header>
 
       <div class="veille-list">
@@ -48,6 +50,12 @@ const subtitle = t('veille.subtitle').replace('{axis}', VEILLE_AXIS.fr);
 <style>
   .veille-subtitle {
     max-width: 60ch;
+  }
+  .veille-updated {
+    margin-top: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-faint);
   }
   .veille-list {
     display: grid;

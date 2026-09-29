@@ -76,3 +76,11 @@ export const VEILLE_ENTRIES = [
     },
   },
 ] as const;
+
+/** Date (YYYY-MM) de l'entree la plus recente — utilisee pour afficher
+ * "Derniere mise a jour" sur la page /veille, sans rien a synchroniser
+ * a la main : ajoute une entree, cette valeur suit automatiquement. */
+export const VEILLE_LAST_UPDATED = VEILLE_ENTRIES.reduce(
+  (latest, e) => (e.date > latest ? e.date : latest),
+  VEILLE_ENTRIES[0]?.date ?? ''
+);

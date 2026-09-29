@@ -12,8 +12,18 @@ export function useTranslations(lang: Lang) {
   };
 }
 
-/** Base path du site (ex: "/portfolio") sans slash final. Gere GitHub Pages. */
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+/**
+ * Formate une date "YYYY-MM" en texte lisible : "septembre 2026" (fr) /
+ * "September 2026" (en). Utilise pour la date de derniere mise a jour de
+ * la page /veille.
+ */
+export function formatYearMonth(yyyyMm: string, lang: Lang): string {
+  const [y, m] = yyyyMm.split('-').map(Number);
+  if (!y || !m) return yyyyMm;
+  const date = new Date(Date.UTC(y, m - 1, 1));
+  const locale = lang === 'fr' ? 'fr-FR' : 'en-US';
+  return new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+}
 
 /**
  * URL absolue (depuis la racine du site) vers un fichier de /public,
@@ -21,6 +31,7 @@ const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
  * `${import.meta.env.BASE_URL}${chemin}` qui casse selon que BASE_URL a ou
  * non un slash final.
  */
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 export function assetUrl(path: string): string {
   return `${BASE}/${path.replace(/^\//, '')}`;
 }

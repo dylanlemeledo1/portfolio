@@ -50,9 +50,14 @@ const ogLocale = lang === 'fr' ? 'fr_FR' : 'en_US';
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={ogLocale} />
     <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:image" content={new URL(assetUrl('og-image.jpg'), Astro.site).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${SITE.name} — ${t('hero.role')}`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(assetUrl('og-image.jpg'), Astro.site).href} />
 
     <!-- Donnees structurees (SEO : type Person) -->
     <script

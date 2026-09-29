@@ -22,6 +22,7 @@ export const ui = {
     'nav.stage': 'Stage',
     'nav.projects': 'Projets',
     'nav.competences': 'Compétences',
+    'nav.certifications': 'Certifs',
     'nav.veille': 'Veille',
     'nav.autoeval': 'Bilan',
     'nav.contact': 'Contact',
@@ -95,6 +96,16 @@ export const ui = {
     'competences.title': 'Compétences',
     'competences.subtitle':
       'Les 6 compétences du référentiel BTS SIO, illustrées par des situations réelles rencontrées en stage.',
+
+    // --- Certifications (epreuve facultative EF3) ---
+    'certifications.kicker': 'Épreuve EF3',
+    'certifications.title': 'Certifications',
+    'certifications.subtitle':
+      "Mon parcours de certification complémentaire : ce que j'ai suivi, ce que ça m'a appris, et son lien avec mon projet professionnel.",
+    'certifications.appris': "Ce que j'ai appris",
+    'certifications.lienProjet': 'Lien avec mon projet professionnel',
+    'certifications.lienBts': 'Lien avec mon parcours BTS SIO',
+
     'skills.kicker': 'Ma boîte à outils',
     'skills.title': 'Stack technique',
     'skills.subtitle':
@@ -111,6 +122,7 @@ export const ui = {
     'veille.subtitle':
       "Axe suivi : {axis}. Une veille est vivante — cette page sera complétée régulièrement.",
     'veille.source': 'Source',
+    'veille.updated': 'Mise à jour : {date}',
 
     // --- Autoévaluation ---
     'autoeval.kicker': 'Bilan',
@@ -156,6 +168,7 @@ export const ui = {
     'nav.stage': 'Internship',
     'nav.projects': 'Projects',
     'nav.competences': 'Skills',
+    'nav.certifications': 'Certs',
     'nav.veille': 'Watch',
     'nav.autoeval': 'Assessment',
     'nav.contact': 'Contact',
@@ -228,6 +241,16 @@ export const ui = {
     'competences.title': 'Skills',
     'competences.subtitle':
       "The 6 competencies from the BTS SIO curriculum, illustrated with real situations from my internship.",
+
+    // --- Certifications (EF3 elective exam) ---
+    'certifications.kicker': 'EF3 exam',
+    'certifications.title': 'Certifications',
+    'certifications.subtitle':
+      "My additional certification path: what I took, what I learned from it, and how it ties into my professional project.",
+    'certifications.appris': 'What I learned',
+    'certifications.lienProjet': 'Link to my professional project',
+    'certifications.lienBts': 'Link to my BTS SIO curriculum',
+
     'skills.kicker': 'My toolbox',
     'skills.title': 'Tech stack',
     'skills.subtitle':
@@ -244,6 +267,7 @@ export const ui = {
     'veille.subtitle':
       "Focus area: {axis}. A tech watch is a living thing — this page will be updated regularly.",
     'veille.source': 'Source',
+    'veille.updated': 'Updated: {date}',
 
     // --- Self-assessment ---
     'autoeval.kicker': 'Assessment',

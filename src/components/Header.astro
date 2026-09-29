@@ -15,6 +15,7 @@ const navLinks = [
   { href: pageUrl(lang, 'stage'), label: t('nav.stage') },
   { href: pageUrl(lang, 'projets'), label: t('nav.projects') },
   { href: pageUrl(lang, 'competences'), label: t('nav.competences') },
+  { href: pageUrl(lang, 'certifications'), label: t('nav.certifications') },
   { href: pageUrl(lang, 'veille'), label: t('nav.veille') },
   { href: pageUrl(lang, 'autoeval'), label: t('nav.autoeval') },
   { href: `${homeUrl(lang)}#contact`, label: t('nav.contact') },
@@ -251,9 +252,9 @@ const navLinks = [
   }
 
   /* Responsive : bascule desktop/mobile
-     Seuil plus large que la normale car la nav compte 7 entrees
-     (Parcours / Stage / Projets / Competences / Veille / Bilan / Contact). */
-  @media (max-width: 68rem) {
+     Seuil plus large que la normale car la nav compte 8 entrees
+     (Parcours / Stage / Projets / Competences / Certifs / Veille / Bilan / Contact). */
+  @media (max-width: 76rem) {
     .nav-desktop {
       display: none;
     }
@@ -266,7 +267,7 @@ const navLinks = [
       display: none;
     }
   }
-  @media (min-width: 68.0625rem) {
+  @media (min-width: 76.0625rem) {
     .nav-mobile {
       display: none;
     }

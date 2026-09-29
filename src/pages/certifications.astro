@@ -1,0 +1,254 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { useTranslations, assetUrl } from '../i18n/utils';
+import { CERTIFICATIONS } from '../data/certifications';
+import { SITE } from '../data/site';
+import Icon from '../components/Icon.astro';
+
+const lang = 'fr';
+const t = useTranslations(lang);
+---
+
+<BaseLayout
+  lang={lang}
+  title={`${t('certifications.title')} — ${SITE.name}`}
+  description={t('certifications.subtitle')}
+>
+  <section class="section" aria-labelledby="certifications-title">
+    <div class="container">
+      <header class="reveal">
+        <p class="kicker">{t('certifications.kicker')}</p>
+        <h1 id="certifications-title" class="section-title">{t('certifications.title')}</h1>
+        <p class="section-subtitle">{t('certifications.subtitle')}</p>
+      </header>
+
+      <div class="cert-list">
+        {
+          CERTIFICATIONS.map((cert) => (
+            <article class="cert-block reveal">
+              <p class="cert-provider">{cert.provider}</p>
+              <h2 class="cert-title">{cert.fr.title}</h2>
+              <p class="cert-p">{cert.fr.presentation}</p>
+
+              {cert.badges && (
+                <ul class="cert-badges" role="list">
+                  {cert.badges.map((b) => (
+                    <li>
+                      <Icon name="external" />
+                      {b.fr}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {cert.screenshots && (
+                <div class="cert-shots">
+                  {cert.screenshots.map((s) => {
+                    const src = assetUrl(`images/certifications/${s.file}`);
+                    return (
+                      <button type="button" class="cert-thumb" data-src={src} data-caption={s.fr}>
+                        <img src={src} alt={s.fr} loading="lazy" decoding="async" />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              <h3 class="cert-h3">{t('certifications.appris')}</h3>
+              <ul class="cert-list-items" role="list">
+                {cert.fr.appris.map((a) => (
+                  <li>{a}</li>
+                ))}
+              </ul>
+
+              <h3 class="cert-h3">{t('certifications.lienProjet')}</h3>
+              <p class="cert-p">{cert.fr.lienProjet}</p>
+
+              <h3 class="cert-h3">{t('certifications.lienBts')}</h3>
+              <p class="cert-p">{cert.fr.lienBts}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <dialog id="cert-lightbox" class="cert-lightbox" aria-label={t('certifications.title')}>
+    <button type="button" class="cert-lightbox-close" id="cert-lightbox-close" aria-label={t('stage.screenshots.close')}>
+      <Icon name="close" />
+    </button>
+    <img id="cert-lightbox-img" src="" alt="" />
+    <p id="cert-lightbox-caption" class="cert-lightbox-caption"></p>
+  </dialog>
+</BaseLayout>
+
+<script is:inline>
+  (function () {
+    var dialog = document.getElementById('cert-lightbox');
+    var img = document.getElementById('cert-lightbox-img');
+    var caption = document.getElementById('cert-lightbox-caption');
+    var closeBtn = document.getElementById('cert-lightbox-close');
+    if (!dialog || !img || !caption || !closeBtn) return;
+
+    document.querySelectorAll('.cert-thumb').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        img.src = btn.getAttribute('data-src') || '';
+        img.alt = btn.getAttribute('data-caption') || '';
+        caption.textContent = btn.getAttribute('data-caption') || '';
+        dialog.showModal();
+      });
+    });
+
+    closeBtn.addEventListener('click', function () {
+      dialog.close();
+    });
+    dialog.addEventListener('click', function (e) {
+      if (e.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', function () {
+      img.src = '';
+    });
+  })();
+</script>
+
+<style>
+  .cert-list {
+    display: grid;
+    gap: 2.5rem;
+    margin-top: clamp(2rem, 1rem + 3vw, 3rem);
+  }
+  .cert-block {
+    padding: 1.75rem 2rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+  }
+  .cert-provider {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 0.15rem 0.6rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.75rem;
+  }
+  .cert-title {
+    font-size: var(--step-1);
+    margin-bottom: 0.85rem;
+  }
+  .cert-p {
+    color: var(--text-muted);
+    max-width: 68ch;
+    margin-bottom: 1rem;
+  }
+  .cert-h3 {
+    font-size: var(--step-0);
+    margin-top: 1.75rem;
+    margin-bottom: 0.6rem;
+  }
+  .cert-badges {
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .cert-badges li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--step--1);
+    color: var(--text-muted);
+  }
+  .cert-badges :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .cert-list-items {
+    list-style: none;
+    display: grid;
+    gap: 0.6rem;
+    max-width: 68ch;
+  }
+  .cert-list-items li {
+    position: relative;
+    padding-left: 1.4rem;
+    color: var(--text-muted);
+  }
+  .cert-list-items li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+  .cert-shots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .cert-thumb {
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--bg-soft);
+    cursor: zoom-in;
+  }
+  .cert-thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .cert-lightbox {
+    border: none;
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    color: var(--text);
+    padding: 0;
+    max-width: min(92vw, 60rem);
+    max-height: 90vh;
+    overflow: auto;
+  }
+  .cert-lightbox::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+  }
+  .cert-lightbox img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .cert-lightbox-caption {
+    padding: 0.85rem 1.1rem;
+    font-size: var(--step--1);
+    color: var(--text-muted);
+  }
+  .cert-lightbox-close {
+    position: sticky;
+    top: 0.75rem;
+    left: calc(100% - 3rem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: var(--radius-full);
+    border: none;
+    background: rgba(10, 10, 11, 0.65);
+    color: #fff;
+    cursor: pointer;
+    z-index: 1;
+  }
+  .cert-lightbox-close:hover {
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+</style>
