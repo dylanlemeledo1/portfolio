@@ -1,6 +1,6 @@
 ---
 import { PROJECTS } from '../data/site';
-import { useTranslations } from '../i18n/utils';
+import { useTranslations, assetUrl } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 import Icon from './Icon.astro';
 
@@ -65,13 +65,90 @@ const Heading = headingLevel;
                   <span class="visually-hidden">— {p.title}</span>
                 </a>
               )}
+              {p.play && (
+                <button
+                  type="button"
+                  class="project-link project-play-btn"
+                  data-play-trigger
+                  data-play-src={assetUrl(p.play)}
+                  data-play-title={p.title}
+                >
+                  <Icon name="external" />
+                  <span>{t('projects.play')}</span>
+                  <span class="visually-hidden">— {p.title}</span>
+                </button>
+              )}
             </div>
           </article>
         ))
       }
     </div>
   </div>
+
+  <dialog id="project-play-dialog" class="play-dialog" aria-label={t('projects.play')}>
+    <div class="play-dialog-head">
+      <p class="play-dialog-title" data-play-dialog-title></p>
+      <div class="play-dialog-actions">
+        <a
+          class="play-fullscreen-link"
+          data-play-fullscreen-link
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon name="external" />
+          <span>{t('projects.playFullscreen')}</span>
+        </a>
+        <button type="button" class="play-dialog-close" data-play-close aria-label={t('projects.playClose')}>
+          <Icon name="close" />
+        </button>
+      </div>
+    </div>
+    <iframe
+      id="project-play-frame"
+      class="play-iframe"
+      title={t('projects.play')}
+      loading="lazy"
+      allow="autoplay; fullscreen"
+    ></iframe>
+  </dialog>
 </section>
+
+<script is:inline>
+  (function () {
+    const dialog = document.getElementById('project-play-dialog');
+    const frame = document.getElementById('project-play-frame');
+    if (!dialog || !frame) return;
+    const titleEl = dialog.querySelector('[data-play-dialog-title]');
+    const closeBtn = dialog.querySelector('[data-play-close]');
+    const fullscreenLink = dialog.querySelector('[data-play-fullscreen-link]');
+
+    document.querySelectorAll('[data-play-trigger]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const src = btn.getAttribute('data-play-src');
+        const title = btn.getAttribute('data-play-title') || '';
+        if (!src) return;
+        frame.src = src;
+        if (titleEl) titleEl.textContent = title;
+        if (fullscreenLink) fullscreenLink.setAttribute('href', src);
+        dialog.showModal();
+      });
+    });
+
+    function closeDialog() {
+      dialog.close();
+      frame.src = 'about:blank';
+    }
+
+    closeBtn?.addEventListener('click', closeDialog);
+    dialog.addEventListener('cancel', () => {
+      frame.src = 'about:blank';
+    });
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) closeDialog();
+    });
+  })();
+</script>
 
 <style>
   .projects-grid {
@@ -169,5 +246,92 @@ const Heading = headingLevel;
   }
   .project-link:hover {
     color: var(--accent);
+  }
+
+  .project-play-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ---- Lightbox jeu jouable ---- */
+  .play-dialog {
+    width: min(94vw, 68rem);
+    height: min(90vh, 50rem);
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    color: var(--text);
+    overflow: hidden;
+  }
+  .play-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(2px);
+  }
+  .play-dialog[open] {
+    display: flex;
+    flex-direction: column;
+  }
+  .play-dialog-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-soft);
+  }
+  .play-dialog-title {
+    font-weight: 700;
+    font-size: var(--step--1);
+  }
+  .play-dialog-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .play-fullscreen-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  .play-fullscreen-link:hover {
+    color: var(--accent);
+  }
+  .play-fullscreen-link :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+  .play-dialog-close {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .play-dialog-close:hover {
+    background: var(--bg);
+    color: var(--accent);
+  }
+  .play-dialog-close :global(svg) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .play-iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #06061a;
   }
 </style>

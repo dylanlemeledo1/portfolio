@@ -89,6 +89,9 @@ export const ui = {
       'Des projets personnels pour explorer des technologies que je ne vois pas en cours.',
     'projects.code': 'Code',
     'projects.demo': 'Demo',
+    'projects.play': 'Jouer en ligne',
+    'projects.playClose': 'Fermer le jeu',
+    'projects.playFullscreen': 'Ouvrir en plein ecran',
     'projects.tech': 'Technologies utilisees',
 
     // --- Compétences ---
@@ -234,6 +237,9 @@ export const ui = {
       "Personal projects I built to explore technologies I don't see in class.",
     'projects.code': 'Code',
     'projects.demo': 'Demo',
+    'projects.play': 'Play online',
+    'projects.playClose': 'Close game',
+    'projects.playFullscreen': 'Open fullscreen',
     'projects.tech': 'Tech used',
 
     // --- Skills ---

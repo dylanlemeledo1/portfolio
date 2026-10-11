@@ -96,6 +96,7 @@ export const PROJECTS = [
     tech: ['JavaScript', 'Canvas API', 'Web Audio API'],
     repo: '',
     demo: '',
+    play: 'games/neon-void/index.html',
     featured: false,
   },
   {
@@ -118,6 +119,7 @@ export const PROJECTS = [
     tech: ['Next.js', 'React', 'Three.js', 'Framer Motion', 'Tailwind CSS'],
     repo: '',
     demo: '',
+    play: '',
     featured: true,
   },
   {
@@ -140,6 +142,7 @@ export const PROJECTS = [
     tech: ['Next.js', 'React', 'TypeScript', 'Framer Motion', 'Tailwind CSS'],
     repo: 'https://github.com/dylanlemeledo1/nebula',
     demo: 'https://test-gunstaz.vercel.app',
+    play: '',
     featured: true,
   },
   {
@@ -160,6 +163,7 @@ export const PROJECTS = [
     tech: ['HTML5', 'CSS3', 'JavaScript'],
     repo: 'https://github.com/dylanlemeledo1/citypunks',
     demo: '',
+    play: '',
     featured: false,
   },
   {
@@ -182,6 +186,7 @@ export const PROJECTS = [
     tech: ['JavaScript', 'Web Audio API', 'Canvas API'],
     repo: '',
     demo: 'https://claude.ai/artifact/BbUxHog4wB17nvVg3Wpp2j',
+    play: '',
     featured: true,
   },
 ] as const;
