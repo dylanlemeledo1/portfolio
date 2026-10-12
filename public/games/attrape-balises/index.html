@@ -1,0 +1,494 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Attrape-Balises</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Mono:wght@400;500&display=swap">
+<style>
+  /* Concept : un éditeur de code qui défile. On attrape les balises valides, on esquive les bugs.
+     Look unique volontaire (sombre, ambiance éditeur), identique en clair et en sombre. */
+  :root {
+    --bg: #0d1320;
+    --panneau: #151d2e;
+    --ligne: #243049;
+    --texte: #e7ecf6;
+    --discret: #8b97b0;
+    --accent: #ffb454;
+    --bon: #5ad1e6;
+    --bug: #ff5d6c;
+    --vie: #7be495;
+    --f-titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --f-mono: 'DM Mono', ui-monospace, Menlo, Consolas, monospace;
+    color-scheme: dark;
+  }
+  html, body { background: var(--bg); color: var(--texte); }
+  body {
+    margin: 0;
+    padding-inline: 16px;
+    padding-block: 18px 28px;
+    min-height: 100%;
+    box-sizing: border-box;
+    font-family: var(--f-mono);
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .cadre { width: min(100%, 420px, calc((100dvh - 190px) * 420 / 620)); min-width: min(100%, 280px); display: flex; flex-direction: column; gap: 12px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  h1 {
+    margin: 0;
+    font-family: var(--f-titre);
+    font-weight: 800;
+    font-size: 26px;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  h1 span { color: var(--accent); }
+  .btn-son {
+    font: inherit; font-size: 12px; color: var(--discret);
+    background: none; border: 1px solid var(--ligne); border-radius: 4px;
+    padding: 4px 10px; cursor: pointer;
+  }
+  .btn-son:hover { color: var(--texte); border-color: var(--discret); }
+  .btn-son:focus-visible, .btn-jouer:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .hud { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .hud > div { background: var(--panneau); border: 1px solid var(--ligne); border-radius: 4px; padding: 8px 10px; min-width: 0; }
+  .hud small { display: block; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--discret); }
+  .hud strong { display: block; font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 2px; white-space: nowrap; }
+  .vies { display: flex; gap: 5px; margin-top: 8px; height: 20px; align-items: center; }
+  .vies i { width: 14px; height: 14px; border-radius: 3px; background: var(--vie); }
+  .vies i.vide { background: transparent; border: 1px solid var(--ligne); }
+
+  .scene { position: relative; aspect-ratio: 420 / 620; max-width: 100%; border: 1px solid var(--ligne); border-radius: 4px; overflow: hidden; background: var(--bg); }
+  canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: none; }
+
+  .ecran {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 14px;
+    padding: 28px;
+    background: rgba(13, 19, 32, 0.88);
+  }
+  .ecran[hidden] { display: none; }
+  .ecran h2 { margin: 0; font-family: var(--f-titre); font-weight: 800; font-size: 34px; line-height: 1.05; letter-spacing: -0.02em; text-wrap: balance; }
+  .ecran p { margin: 0; color: var(--discret); line-height: 1.55; max-width: 34ch; }
+  .ecran p b { color: var(--texte); font-weight: 500; }
+  .btn-jouer {
+    font-family: var(--f-mono); font-size: 16px; font-weight: 500;
+    background: var(--accent); color: #1a1205; border: 0; border-radius: 4px;
+    padding: 12px 22px; cursor: pointer;
+  }
+  .btn-jouer:hover { filter: brightness(1.08); }
+
+  .legende { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--discret); font-size: 12px; line-height: 1.4; }
+  .legende span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; background: var(--c); }
+  .aide { margin: 0; color: var(--discret); font-size: 12px; line-height: 1.55; }
+  kbd { font-family: var(--f-mono); border: 1px solid var(--ligne); border-radius: 3px; padding: 0 5px; color: var(--texte); }
+</style>
+
+<div class="cadre">
+  <header>
+    <h1>Attrape<span>-</span>Balises</h1>
+    <button class="btn-son" id="btn-son" type="button" aria-pressed="true">Son : oui</button>
+  </header>
+
+  <div class="hud" aria-live="off">
+    <div><small>Score</small><strong id="hud-score">0</strong></div>
+    <div><small>Record</small><strong id="hud-record">0</strong></div>
+    <div><small>Vies</small><div class="vies" id="hud-vies"></div></div>
+  </div>
+
+  <div class="scene" id="scene">
+    <canvas id="jeu" aria-label="Zone de jeu"></canvas>
+    <div class="ecran" id="ecran">
+      <h2 id="ecran-titre">Attrape-Balises</h2>
+      <p id="ecran-texte">Les balises HTML tombent du ciel. <b>Attrape-les</b> avec ton panier, <b>évite les bugs</b>. Chaque balise attrapée d'affilée augmente ton multiplicateur.</p>
+      <button class="btn-jouer" id="btn-jouer" type="button">Jouer</button>
+    </div>
+  </div>
+
+  <div class="legende">
+    <span style="--c: var(--bon)">Balise : +10 points</span>
+    <span style="--c: var(--bug)">Bug : −1 vie</span>
+    <span style="--c: var(--vie)">+1 : gagne une vie</span>
+  </div>
+  <p class="aide">Bouger : flèches ou <kbd>Q</kbd> <kbd>D</kbd>, souris, ou glisse le doigt. Pause : <kbd>Espace</kbd>. Rater une balise remet le multiplicateur à x1.</p>
+</div>
+
+<script>
+(() => {
+  // ---------- Constantes ----------
+  const LARGEUR = 420, HAUTEUR = 620;
+  const COULEURS = { bg: '#0d1320', ligne: '#243049', discret: '#8b97b0', accent: '#ffb454', bon: '#5ad1e6', bug: '#ff5d6c', vie: '#7be495', texte: '#e7ecf6' };
+  const BALISES = ['<div>', '</p>', '<a>', '<h1>', '{ }', '</>', '<ul>', '<li>', '<nav>', '<img>', '<form>', '<span>', 'css;', '<main>'];
+  const VIES_MAX = 5;
+  const CLE_RECORD = 'attrape-balises-record';
+
+  // ---------- Éléments ----------
+  const canvas = document.getElementById('jeu');
+  const ctx = canvas.getContext('2d');
+  const ecran = document.getElementById('ecran');
+  const ecranTitre = document.getElementById('ecran-titre');
+  const ecranTexte = document.getElementById('ecran-texte');
+  const btnJouer = document.getElementById('btn-jouer');
+  const btnSon = document.getElementById('btn-son');
+  const hudScore = document.getElementById('hud-score');
+  const hudRecord = document.getElementById('hud-record');
+  const hudVies = document.getElementById('hud-vies');
+
+  // ---------- État du jeu ----------
+  let etat = 'accueil'; // accueil | jeu | pause | fin
+  let score, vies, combo, niveau, delaiApparition, secousse, fondTemps = 0;
+  let objets = [], particules = [], flottants = [];
+  let record = 0;
+  let sonActif = true;
+  let audio = null;
+  const joueur = { x: LARGEUR / 2, y: HAUTEUR - 64, l: 92 };
+  const touches = { gauche: false, droite: false };
+  let cible = null; // position visée par la souris ou le doigt
+
+  try { record = parseInt(localStorage.getItem(CLE_RECORD), 10) || 0; } catch (e) { record = 0; }
+
+  // ---------- Canvas net sur écrans HD ----------
+  function dimensionner() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = LARGEUR * dpr;
+    canvas.height = HAUTEUR * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  dimensionner();
+
+  // ---------- Son (petits bips, démarre après un clic) ----------
+  function bip(frequence, duree, type) {
+    if (!sonActif) return;
+    try {
+      if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === 'suspended') audio.resume();
+      const osc = audio.createOscillator();
+      const gain = audio.createGain();
+      osc.type = type || 'square';
+      osc.frequency.value = frequence;
+      gain.gain.setValueAtTime(0.05, audio.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + duree);
+      osc.connect(gain); gain.connect(audio.destination);
+      osc.start(); osc.stop(audio.currentTime + duree);
+    } catch (e) { /* le jeu marche sans son */ }
+  }
+
+  // ---------- Affichage des compteurs ----------
+  function majHud() {
+    hudScore.textContent = score;
+    hudRecord.textContent = Math.max(record, score || 0);
+    let html = '';
+    for (let i = 0; i < VIES_MAX; i++) html += '<i' + (i < vies ? '' : ' class="vide"') + '></i>';
+    hudVies.innerHTML = html;
+  }
+
+  function multiplicateur() { return Math.min(5, 1 + Math.floor(combo / 5)); }
+
+  function montrerEcran(titre, texte, bouton) {
+    ecranTitre.textContent = titre;
+    ecranTexte.innerHTML = texte;
+    btnJouer.textContent = bouton;
+    ecran.hidden = false;
+    btnJouer.focus({ preventScroll: true });
+  }
+
+  // ---------- Cycle de partie ----------
+  function nouvellePartie() {
+    score = 0; vies = 3; combo = 0; niveau = 1;
+    objets = []; particules = []; flottants = [];
+    delaiApparition = 0.5; secousse = 0;
+    joueur.x = LARGEUR / 2; cible = null;
+    etat = 'jeu';
+    ecran.hidden = true;
+    btnJouer.blur();
+    majHud();
+  }
+
+  function finDePartie() {
+    etat = 'fin';
+    let nouveau = false;
+    if (score > record) {
+      record = score; nouveau = true;
+      try { localStorage.setItem(CLE_RECORD, String(record)); } catch (e) { /* stockage indisponible */ }
+    }
+    majHud();
+    bip(160, 0.5, 'sawtooth');
+    montrerEcran(
+      'Segfault !',
+      'Score : <b>' + score + '</b> (niveau ' + niveau + ')' + (nouveau ? '<br><b>Nouveau record !</b>' : '<br>Record : <b>' + record + '</b>'),
+      'Rejouer'
+    );
+  }
+
+  function basculerPause() {
+    if (etat === 'jeu') {
+      etat = 'pause';
+      montrerEcran('Pause', 'Le code attend. Reprends quand tu veux.', 'Reprendre');
+    } else if (etat === 'pause') {
+      etat = 'jeu';
+      ecran.hidden = true;
+      btnJouer.blur();
+    }
+  }
+
+  btnJouer.addEventListener('click', () => {
+    if (etat === 'pause') basculerPause(); else nouvellePartie();
+  });
+
+  btnSon.addEventListener('click', () => {
+    sonActif = !sonActif;
+    btnSon.textContent = 'Son : ' + (sonActif ? 'oui' : 'non');
+    btnSon.setAttribute('aria-pressed', String(sonActif));
+    btnSon.blur();
+  });
+
+  // ---------- Commandes ----------
+  window.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase();
+    if (k === 'arrowleft' || k === 'q' || k === 'a') { touches.gauche = true; cible = null; e.preventDefault(); }
+    else if (k === 'arrowright' || k === 'd') { touches.droite = true; cible = null; e.preventDefault(); }
+    else if ((k === ' ' || k === 'p' || k === 'escape') && (etat === 'jeu' || etat === 'pause')) {
+      if (!e.repeat) basculerPause();
+      e.preventDefault();
+    }
+  });
+  window.addEventListener('keyup', (e) => {
+    const k = e.key.toLowerCase();
+    if (k === 'arrowleft' || k === 'q' || k === 'a') touches.gauche = false;
+    else if (k === 'arrowright' || k === 'd') touches.droite = false;
+  });
+  window.addEventListener('blur', () => {
+    touches.gauche = touches.droite = false;
+    if (etat === 'jeu') basculerPause();
+  });
+
+  function viser(e) {
+    const r = canvas.getBoundingClientRect();
+    cible = (e.clientX - r.left) / r.width * LARGEUR;
+  }
+  canvas.addEventListener('pointermove', viser);
+  canvas.addEventListener('pointerdown', (e) => { viser(e); try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignoré */ } });
+
+  // ---------- Apparition des objets ----------
+  function creerObjet() {
+    const tirage = Math.random();
+    const probaBug = Math.min(0.45, 0.28 + niveau * 0.02);
+    let type = 'bon';
+    if (tirage < probaBug) type = 'bug';
+    else if (tirage < probaBug + 0.03 && vies < VIES_MAX) type = 'vie';
+
+    const vitesse = 130 + niveau * 22 + Math.random() * 60;
+    let l = 30, h = 26, texte = '';
+    if (type === 'bon') {
+      texte = BALISES[Math.floor(Math.random() * BALISES.length)];
+      ctx.font = '500 15px "DM Mono", monospace';
+      l = Math.ceil(ctx.measureText(texte).width) + 18; h = 28;
+    } else if (type === 'vie') { l = 30; h = 30; texte = '+1'; }
+    const x = l / 2 + 6 + Math.random() * (LARGEUR - l - 12);
+    objets.push({ type, x, y: -h, l, h, vy: vitesse, texte, phase: Math.random() * 6.28 });
+  }
+
+  function eclater(x, y, couleur, n) {
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, v = 60 + Math.random() * 170;
+      particules.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 40, vie: 0.5 + Math.random() * 0.3, couleur });
+    }
+  }
+
+  // ---------- Mise à jour ----------
+  function maj(dt) {
+    // déplacement du panier
+    const dir = (touches.droite ? 1 : 0) - (touches.gauche ? 1 : 0);
+    if (dir !== 0) joueur.x += dir * 440 * dt;
+    else if (cible !== null) {
+      const dx = cible - joueur.x, pas = 1500 * dt;
+      joueur.x += Math.max(-pas, Math.min(pas, dx));
+    }
+    joueur.x = Math.max(joueur.l / 2, Math.min(LARGEUR - joueur.l / 2, joueur.x));
+
+    // apparition
+    delaiApparition -= dt;
+    if (delaiApparition <= 0) {
+      creerObjet();
+      delaiApparition = Math.max(0.28, 0.95 - niveau * 0.06) * (0.75 + Math.random() * 0.5);
+    }
+
+    // objets
+    const haut = joueur.y - 10, bas = joueur.y + 8;
+    for (let i = objets.length - 1; i >= 0; i--) {
+      const o = objets[i];
+      o.y += o.vy * dt;
+      const basO = o.y + o.h / 2, hautO = o.y - o.h / 2;
+      const dansLePanier = basO >= haut && hautO <= bas && Math.abs(o.x - joueur.x) <= (joueur.l + o.l) / 2 - 4;
+      if (dansLePanier) {
+        objets.splice(i, 1);
+        if (o.type === 'bon') {
+          combo++;
+          const gain = 10 * multiplicateur();
+          score += gain;
+          eclater(o.x, o.y, COULEURS.bon, 10);
+          flottants.push({ x: o.x, y: o.y - 10, texte: '+' + gain, couleur: COULEURS.bon, vie: 0.8 });
+          bip(520 + Math.min(combo, 15) * 30, 0.08);
+        } else if (o.type === 'vie') {
+          vies = Math.min(VIES_MAX, vies + 1);
+          eclater(o.x, o.y, COULEURS.vie, 14);
+          flottants.push({ x: o.x, y: o.y - 10, texte: '+1 vie', couleur: COULEURS.vie, vie: 0.9 });
+          bip(880, 0.15, 'triangle');
+        } else {
+          vies--; combo = 0; secousse = 0.3;
+          eclater(o.x, o.y, COULEURS.bug, 18);
+          flottants.push({ x: o.x, y: o.y - 10, texte: 'Bug !', couleur: COULEURS.bug, vie: 0.8 });
+          bip(120, 0.25, 'sawtooth');
+        }
+        niveau = 1 + Math.floor(score / 150);
+        majHud();
+        if (vies <= 0) { finDePartie(); return; }
+      } else if (o.y - o.h > HAUTEUR) {
+        objets.splice(i, 1);
+        if (o.type === 'bon') combo = 0; // balise ratée
+      }
+    }
+
+    // effets
+    for (let i = particules.length - 1; i >= 0; i--) {
+      const p = particules[i];
+      p.vie -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 380 * dt;
+      if (p.vie <= 0) particules.splice(i, 1);
+    }
+    for (let i = flottants.length - 1; i >= 0; i--) {
+      const f = flottants[i];
+      f.vie -= dt; f.y -= 40 * dt;
+      if (f.vie <= 0) flottants.splice(i, 1);
+    }
+    if (secousse > 0) secousse -= dt;
+  }
+
+  // ---------- Dessin ----------
+  function rectArrondi(x, y, l, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + l, y, x + l, y + h, r);
+    ctx.arcTo(x + l, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + l, y, r);
+    ctx.closePath();
+  }
+
+  function dessinerFond() {
+    ctx.fillStyle = COULEURS.bg;
+    ctx.fillRect(0, 0, LARGEUR, HAUTEUR);
+    // gouttière de numéros de ligne qui défile, comme dans un éditeur
+    const pas = 24, total = Math.ceil(HAUTEUR / pas) + 2;
+    const decalage = (fondTemps * 34) % pas;
+    const premiere = Math.floor((fondTemps * 34) / pas);
+    ctx.font = '400 11px "DM Mono", monospace';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#2b3956';
+    for (let i = 0; i < total; i++) {
+      ctx.fillText(String(premiere + i + 1), 26, i * pas - decalage + pas / 2);
+    }
+    ctx.fillStyle = COULEURS.ligne;
+    ctx.fillRect(34, 0, 1, HAUTEUR);
+  }
+
+  function dessinerBug(o) {
+    const { x, y } = o;
+    ctx.strokeStyle = COULEURS.bug; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    const t = fondTemps * 14 + o.phase;
+    for (let i = -1; i <= 1; i++) {
+      const dy = i * 7, agit = Math.sin(t + i) * 2;
+      ctx.beginPath(); ctx.moveTo(x - 8, y + dy); ctx.lineTo(x - 16, y + dy + agit + 3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + 8, y + dy); ctx.lineTo(x + 16, y + dy + agit + 3); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.moveTo(x - 3, y - 11); ctx.lineTo(x - 7, y - 17); ctx.moveTo(x + 3, y - 11); ctx.lineTo(x + 7, y - 17); ctx.stroke();
+    ctx.fillStyle = COULEURS.bug;
+    ctx.beginPath(); ctx.ellipse(x, y + 1, 9, 12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COULEURS.bg;
+    ctx.beginPath(); ctx.arc(x - 3.5, y - 4, 1.8, 0, Math.PI * 2); ctx.arc(x + 3.5, y - 4, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(x - 0.75, y + 2, 1.5, 9);
+  }
+
+  function dessinerObjet(o) {
+    if (o.type === 'bon') {
+      rectArrondi(o.x - o.l / 2, o.y - o.h / 2, o.l, o.h, 5);
+      ctx.fillStyle = 'rgba(90, 209, 230, 0.12)'; ctx.fill();
+      ctx.strokeStyle = COULEURS.bon; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = COULEURS.bon;
+      ctx.font = '500 15px "DM Mono", monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(o.texte, o.x, o.y + 1);
+    } else if (o.type === 'vie') {
+      ctx.fillStyle = COULEURS.vie;
+      ctx.beginPath(); ctx.arc(o.x, o.y, 15, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#0a1a10';
+      ctx.font = '500 14px "DM Mono", monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(o.texte, o.x, o.y + 1);
+    } else {
+      dessinerBug(o);
+    }
+  }
+
+  function dessinerPanier() {
+    const x = joueur.x, y = joueur.y, m = joueur.l / 2;
+    ctx.strokeStyle = COULEURS.accent; ctx.lineWidth = 5; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x - m, y - 10); ctx.lineTo(x - m, y + 8); ctx.lineTo(x + m, y + 8); ctx.lineTo(x + m, y - 10);
+    ctx.stroke();
+  }
+
+  function dessiner() {
+    ctx.save();
+    if (secousse > 0) ctx.translate((Math.random() - 0.5) * 8, (Math.random() - 0.5) * 8);
+    dessinerFond();
+    objets.forEach(dessinerObjet);
+    dessinerPanier();
+    particules.forEach((p) => {
+      ctx.globalAlpha = Math.max(0, Math.min(1, p.vie * 2));
+      ctx.fillStyle = p.couleur;
+      ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+    });
+    ctx.globalAlpha = 1;
+    ctx.font = '500 14px "DM Mono", monospace';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    flottants.forEach((f) => {
+      ctx.globalAlpha = Math.max(0, Math.min(1, f.vie * 2));
+      ctx.fillStyle = f.couleur;
+      ctx.fillText(f.texte, f.x, f.y);
+    });
+    ctx.globalAlpha = 1;
+    // indicateurs en jeu : niveau et multiplicateur
+    if (etat === 'jeu' || etat === 'pause') {
+      ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+      ctx.fillStyle = COULEURS.discret;
+      ctx.font = '400 12px "DM Mono", monospace';
+      ctx.fillText('niveau ' + niveau, LARGEUR - 12, 12);
+      ctx.fillStyle = multiplicateur() > 1 ? COULEURS.accent : COULEURS.discret;
+      ctx.fillText('x' + multiplicateur() + (combo > 0 ? '  série ' + combo : ''), LARGEUR - 12, 30);
+    }
+    ctx.restore();
+  }
+
+  // ---------- Boucle principale ----------
+  let dernier = performance.now();
+  function boucle(t) {
+    const dt = Math.min((t - dernier) / 1000, 0.05);
+    dernier = t;
+    if (etat !== 'pause') fondTemps += dt;
+    if (etat === 'jeu') maj(dt);
+    dessiner();
+    requestAnimationFrame(boucle);
+  }
+
+  score = 0; vies = 3; combo = 0; niveau = 1; secousse = 0;
+  majHud();
+  btnJouer.focus({ preventScroll: true });
+  requestAnimationFrame(boucle);
+})();
+</script>
+
+</body></html>

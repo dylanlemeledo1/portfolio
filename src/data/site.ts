@@ -189,4 +189,50 @@ export const PROJECTS = [
     play: '',
     featured: true,
   },
+  {
+    id: 'snake-python',
+    title: 'Snake.py',
+    fr: {
+      description:
+        "Jeu du serpent revisité avec une ambiance d'éditeur de code : le " +
+        "serpent avale des jetons bleus sur une grille, accélère à chaque " +
+        "prise, et le record est sauvegardé en local. 100% JavaScript et " +
+        "Canvas, jouable au clavier, à la souris ou au doigt.",
+    },
+    en: {
+      description:
+        'A code-editor-themed take on Snake: the snake eats glowing tokens ' +
+        'on a grid, speeds up with each one, and the high score is saved ' +
+        'locally. 100% JavaScript and Canvas, playable with keyboard, mouse ' +
+        'or touch.',
+    },
+    tech: ['JavaScript', 'Canvas API', 'Web Audio API'],
+    repo: '',
+    demo: '',
+    play: 'games/snake-python/index.html',
+    featured: false,
+  },
+  {
+    id: 'attrape-balises',
+    title: 'Attrape-Balises',
+    fr: {
+      description:
+        "Arcade où des balises HTML tombent du ciel façon éditeur de code : " +
+        "on les attrape avec un panier pour marquer des points et on évite " +
+        "les bugs qui coûtent une vie. Combos, multiplicateur de score et " +
+        "record sauvegardé en local, 100% JavaScript natif.",
+    },
+    en: {
+      description:
+        'An arcade game where HTML tags fall from the sky in a code-editor ' +
+        'setting: catch them with a basket to score, dodge the bugs that ' +
+        'cost a life. Combos, score multiplier and a locally saved high ' +
+        'score, 100% vanilla JavaScript.',
+    },
+    tech: ['JavaScript', 'Canvas API', 'Web Audio API'],
+    repo: '',
+    demo: '',
+    play: 'games/attrape-balises/index.html',
+    featured: false,
+  },
 ] as const;

@@ -1,0 +1,376 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Snake Python</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Mono:wght@400;500&display=swap">
+<style>
+  /* Concept : un serpent qui grandit en avalant des jetons de code, sur une grille d'éditeur.
+     Look unique volontaire (sombre), identique en clair et en sombre. */
+  :root {
+    --bg: #0d1320;
+    --panneau: #151d2e;
+    --ligne: #243049;
+    --texte: #e7ecf6;
+    --discret: #8b97b0;
+    --accent: #ffb454;
+    --jeton: #5ad1e6;
+    --f-titre: 'Bricolage Grotesque', system-ui, sans-serif;
+    --f-mono: 'DM Mono', ui-monospace, Menlo, Consolas, monospace;
+    color-scheme: dark;
+  }
+  html, body { background: var(--bg); color: var(--texte); }
+  body {
+    margin: 0;
+    padding-inline: 16px;
+    padding-block: 18px 28px;
+    min-height: 100%;
+    box-sizing: border-box;
+    font-family: var(--f-mono);
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .cadre { width: min(100%, 420px); display: flex; flex-direction: column; gap: 12px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  h1 { margin: 0; font-family: var(--f-titre); font-weight: 800; font-size: 26px; letter-spacing: -0.02em; text-wrap: balance; }
+  h1 span { color: var(--accent); }
+  .btn-son { font: inherit; font-size: 12px; color: var(--discret); background: none; border: 1px solid var(--ligne); border-radius: 4px; padding: 4px 10px; cursor: pointer; }
+  .btn-son:hover { color: var(--texte); border-color: var(--discret); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .hud { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .hud > div { background: var(--panneau); border: 1px solid var(--ligne); border-radius: 4px; padding: 8px 10px; min-width: 0; }
+  .hud small { display: block; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--discret); }
+  .hud strong { display: block; font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 2px; }
+
+  .scene { position: relative; aspect-ratio: 1 / 1; max-width: 100%; border: 1px solid var(--ligne); border-radius: 4px; overflow: hidden; background: var(--bg); }
+  canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+
+  .ecran { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 14px; padding: 28px; background: rgba(13, 19, 32, 0.88); }
+  .ecran[hidden] { display: none; }
+  .ecran h2 { margin: 0; font-family: var(--f-titre); font-weight: 800; font-size: 34px; line-height: 1.05; letter-spacing: -0.02em; text-wrap: balance; }
+  .ecran p { margin: 0; color: var(--discret); line-height: 1.55; max-width: 34ch; }
+  .ecran p b { color: var(--texte); font-weight: 500; }
+  .btn-jouer { font-family: var(--f-mono); font-size: 16px; font-weight: 500; background: var(--accent); color: #1a1205; border: 0; border-radius: 4px; padding: 12px 22px; cursor: pointer; }
+  .btn-jouer:hover { filter: brightness(1.08); }
+
+  /* croix directionnelle : visible seulement sur écran tactile */
+  .croix { display: none; grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(2, 56px); gap: 6px; justify-content: center; }
+  .croix button { font: inherit; font-size: 20px; color: var(--texte); background: var(--panneau); border: 1px solid var(--ligne); border-radius: 6px; touch-action: manipulation; }
+  .croix button:active { background: var(--ligne); }
+  .croix .haut { grid-column: 2; grid-row: 1; }
+  .croix .gauche { grid-column: 1; grid-row: 2; }
+  .croix .bas { grid-column: 2; grid-row: 2; }
+  .croix .droite { grid-column: 3; grid-row: 2; }
+  @media (pointer: coarse) { .croix { display: grid; } }
+
+  .aide { margin: 0; color: var(--discret); font-size: 12px; line-height: 1.55; }
+  kbd { font-family: var(--f-mono); border: 1px solid var(--ligne); border-radius: 3px; padding: 0 5px; color: var(--texte); }
+</style>
+
+<div class="cadre">
+  <header>
+    <h1>Snake<span>.</span>py</h1>
+    <button class="btn-son" id="btn-son" type="button" aria-pressed="true">Son : oui</button>
+  </header>
+
+  <div class="hud">
+    <div><small>Score</small><strong id="hud-score">0</strong></div>
+    <div><small>Record</small><strong id="hud-record">0</strong></div>
+    <div><small>Longueur</small><strong id="hud-longueur">3</strong></div>
+  </div>
+
+  <div class="scene">
+    <canvas id="jeu" aria-label="Zone de jeu du Snake"></canvas>
+    <div class="ecran" id="ecran">
+      <h2 id="ecran-titre">Snake.py</h2>
+      <p id="ecran-texte">Avale les <b>jetons bleus</b> pour grandir. Ne touche ni les <b>murs</b> ni ta propre <b>queue</b>. Le serpent accélère à chaque jeton.</p>
+      <button class="btn-jouer" id="btn-jouer" type="button">Jouer</button>
+    </div>
+  </div>
+
+  <div class="croix" id="croix" aria-label="Commandes directionnelles">
+    <button class="haut" type="button" data-dir="haut" aria-label="Haut">&#9650;</button>
+    <button class="gauche" type="button" data-dir="gauche" aria-label="Gauche">&#9664;</button>
+    <button class="bas" type="button" data-dir="bas" aria-label="Bas">&#9660;</button>
+    <button class="droite" type="button" data-dir="droite" aria-label="Droite">&#9654;</button>
+  </div>
+
+  <p class="aide">Bouger : flèches, <kbd>Z</kbd> <kbd>Q</kbd> <kbd>S</kbd> <kbd>D</kbd>, glissement du doigt ou croix. Pause : <kbd>Espace</kbd>.</p>
+</div>
+
+<script>
+(() => {
+  // ---------- Constantes ----------
+  const COLONNES = 20, LIGNES = 20, CASE = 20;
+  const TAILLE = COLONNES * CASE;
+  const COULEURS = { bg: '#0d1320', grille: '#1a2438', accent: '#ffb454', corps: '#d98f2f', jeton: '#5ad1e6', bgJeton: '#0d1320' };
+  const DIRECTIONS = { haut: { x: 0, y: -1 }, bas: { x: 0, y: 1 }, gauche: { x: -1, y: 0 }, droite: { x: 1, y: 0 } };
+  const CLE_RECORD = 'snake-python-record';
+
+  // ---------- Éléments ----------
+  const canvas = document.getElementById('jeu');
+  const ctx = canvas.getContext('2d');
+  const ecran = document.getElementById('ecran');
+  const ecranTitre = document.getElementById('ecran-titre');
+  const ecranTexte = document.getElementById('ecran-texte');
+  const btnJouer = document.getElementById('btn-jouer');
+  const btnSon = document.getElementById('btn-son');
+  const hudScore = document.getElementById('hud-score');
+  const hudRecord = document.getElementById('hud-record');
+  const hudLongueur = document.getElementById('hud-longueur');
+
+  // ---------- État ----------
+  let etat = 'accueil'; // accueil | jeu | pause | fin
+  let serpent, direction, fileDirections, jeton, score, intervalle, cumul = 0, flash = 0;
+  let record = 0, sonActif = true, audio = null;
+  try { record = parseInt(localStorage.getItem(CLE_RECORD), 10) || 0; } catch (e) { record = 0; }
+
+  function dimensionner() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = TAILLE * dpr;
+    canvas.height = TAILLE * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  dimensionner();
+
+  // ---------- Son ----------
+  function bip(frequence, duree, type) {
+    if (!sonActif) return;
+    try {
+      if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === 'suspended') audio.resume();
+      const osc = audio.createOscillator(), gain = audio.createGain();
+      osc.type = type || 'square';
+      osc.frequency.value = frequence;
+      gain.gain.setValueAtTime(0.05, audio.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + duree);
+      osc.connect(gain); gain.connect(audio.destination);
+      osc.start(); osc.stop(audio.currentTime + duree);
+    } catch (e) { /* le jeu marche sans son */ }
+  }
+
+  // ---------- Compteurs et écrans ----------
+  function majHud() {
+    hudScore.textContent = score;
+    hudRecord.textContent = Math.max(record, score);
+    hudLongueur.textContent = serpent.length;
+  }
+
+  function montrerEcran(titre, texte, bouton) {
+    ecranTitre.textContent = titre;
+    ecranTexte.innerHTML = texte;
+    btnJouer.textContent = bouton;
+    ecran.hidden = false;
+    btnJouer.focus({ preventScroll: true });
+  }
+
+  // ---------- Logique du jeu ----------
+  function placerJeton() {
+    const libres = [];
+    for (let x = 0; x < COLONNES; x++) {
+      for (let y = 0; y < LIGNES; y++) {
+        if (!serpent.some((s) => s.x === x && s.y === y)) libres.push({ x, y });
+      }
+    }
+    jeton = libres.length ? libres[Math.floor(Math.random() * libres.length)] : null;
+  }
+
+  function nouvellePartie() {
+    serpent = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+    direction = DIRECTIONS.droite;
+    fileDirections = [];
+    score = 0; intervalle = 140; cumul = 0; flash = 0;
+    placerJeton();
+    etat = 'jeu';
+    ecran.hidden = true;
+    btnJouer.blur();
+    majHud();
+  }
+
+  function finDePartie(victoire) {
+    etat = 'fin';
+    let nouveau = false;
+    if (score > record) {
+      record = score; nouveau = true;
+      try { localStorage.setItem(CLE_RECORD, String(record)); } catch (e) { /* stockage indisponible */ }
+    }
+    majHud();
+    bip(150, 0.45, 'sawtooth');
+    montrerEcran(
+      victoire ? 'Grille pleine !' : 'IndexError',
+      'Score : <b>' + score + '</b> (longueur ' + serpent.length + ')' + (nouveau ? '<br><b>Nouveau record !</b>' : '<br>Record : <b>' + record + '</b>'),
+      'Rejouer'
+    );
+  }
+
+  function tourner(nom) {
+    const d = DIRECTIONS[nom];
+    // on compare avec la dernière direction déjà en attente, pour interdire le demi-tour
+    const derniere = fileDirections.length ? fileDirections[fileDirections.length - 1] : direction;
+    if (d.x === -derniere.x && d.y === -derniere.y) return;
+    if (d.x === derniere.x && d.y === derniere.y) return;
+    if (fileDirections.length < 2) fileDirections.push(d);
+  }
+
+  function pas() {
+    if (fileDirections.length) direction = fileDirections.shift();
+    const tete = { x: serpent[0].x + direction.x, y: serpent[0].y + direction.y };
+    const mange = jeton && tete.x === jeton.x && tete.y === jeton.y;
+    // la queue avance en même temps : sa case est libre sauf si on grandit
+    const corpsBloquant = mange ? serpent : serpent.slice(0, -1);
+    const horsGrille = tete.x < 0 || tete.y < 0 || tete.x >= COLONNES || tete.y >= LIGNES;
+    if (horsGrille || corpsBloquant.some((s) => s.x === tete.x && s.y === tete.y)) {
+      flash = 1;
+      finDePartie(false);
+      return;
+    }
+    serpent.unshift(tete);
+    if (mange) {
+      score += 10;
+      intervalle = Math.max(65, intervalle - 4);
+      bip(600 + Math.min(serpent.length, 30) * 12, 0.07);
+      placerJeton();
+      majHud();
+      if (!jeton) finDePartie(true);
+    } else {
+      serpent.pop();
+    }
+  }
+
+  function basculerPause() {
+    if (etat === 'jeu') {
+      etat = 'pause';
+      montrerEcran('Pause', 'Le serpent retient son souffle.', 'Reprendre');
+    } else if (etat === 'pause') {
+      etat = 'jeu';
+      ecran.hidden = true;
+      btnJouer.blur();
+    }
+  }
+
+  btnJouer.addEventListener('click', () => { if (etat === 'pause') basculerPause(); else nouvellePartie(); });
+  btnSon.addEventListener('click', () => {
+    sonActif = !sonActif;
+    btnSon.textContent = 'Son : ' + (sonActif ? 'oui' : 'non');
+    btnSon.setAttribute('aria-pressed', String(sonActif));
+    btnSon.blur();
+  });
+
+  // ---------- Commandes ----------
+  const TOUCHES = {
+    arrowup: 'haut', z: 'haut', w: 'haut',
+    arrowdown: 'bas', s: 'bas',
+    arrowleft: 'gauche', q: 'gauche', a: 'gauche',
+    arrowright: 'droite', d: 'droite'
+  };
+  window.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase();
+    if (TOUCHES[k]) {
+      if (etat === 'jeu') tourner(TOUCHES[k]);
+      e.preventDefault();
+    } else if ((k === ' ' || k === 'p' || k === 'escape') && (etat === 'jeu' || etat === 'pause')) {
+      if (!e.repeat) basculerPause();
+      e.preventDefault();
+    }
+  });
+  window.addEventListener('blur', () => { if (etat === 'jeu') basculerPause(); });
+
+  // glissement du doigt sur la zone de jeu
+  let departTouche = null;
+  canvas.addEventListener('pointerdown', (e) => { departTouche = { x: e.clientX, y: e.clientY }; });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!departTouche || etat !== 'jeu') return;
+    const dx = e.clientX - departTouche.x, dy = e.clientY - departTouche.y;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+    tourner(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'droite' : 'gauche') : (dy > 0 ? 'bas' : 'haut'));
+    departTouche = { x: e.clientX, y: e.clientY };
+  });
+  const finGeste = () => { departTouche = null; };
+  canvas.addEventListener('pointerup', finGeste);
+  canvas.addEventListener('pointercancel', finGeste);
+
+  // croix directionnelle
+  document.getElementById('croix').addEventListener('pointerdown', (e) => {
+    const b = e.target.closest('button[data-dir]');
+    if (b && etat === 'jeu') { tourner(b.dataset.dir); e.preventDefault(); }
+  });
+
+  // ---------- Dessin ----------
+  function rectArrondi(x, y, l, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + l, y, x + l, y + h, r);
+    ctx.arcTo(x + l, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + l, y, r);
+    ctx.closePath();
+  }
+
+  function dessiner(t) {
+    ctx.fillStyle = COULEURS.bg;
+    ctx.fillRect(0, 0, TAILLE, TAILLE);
+    // grille en pointillés
+    ctx.fillStyle = COULEURS.grille;
+    for (let x = 0; x <= COLONNES; x++) for (let y = 0; y <= LIGNES; y++) ctx.fillRect(x * CASE - 1, y * CASE - 1, 2, 2);
+
+    if (!serpent) return;
+
+    // jeton
+    if (jeton) {
+      const pulse = 1 + Math.sin(t / 220) * 0.08;
+      const cx = jeton.x * CASE + CASE / 2, cy = jeton.y * CASE + CASE / 2, m = 7 * pulse;
+      rectArrondi(cx - m, cy - m, m * 2, m * 2, 4);
+      ctx.fillStyle = 'rgba(90, 209, 230, 0.18)'; ctx.fill();
+      ctx.strokeStyle = COULEURS.jeton; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = COULEURS.jeton;
+      ctx.fillRect(cx - 2, cy - 2, 4, 4);
+    }
+
+    // serpent : le corps s'assombrit vers la queue
+    for (let i = serpent.length - 1; i >= 0; i--) {
+      const s = serpent[i];
+      rectArrondi(s.x * CASE + 1.5, s.y * CASE + 1.5, CASE - 3, CASE - 3, i === 0 ? 6 : 4);
+      ctx.fillStyle = i === 0 ? COULEURS.accent : COULEURS.corps;
+      ctx.globalAlpha = i === 0 ? 1 : Math.max(0.45, 1 - i / (serpent.length + 6));
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // yeux, placés selon la direction
+    const tete = serpent[0], d = direction;
+    const cx = tete.x * CASE + CASE / 2 + d.x * 3, cy = tete.y * CASE + CASE / 2 + d.y * 3;
+    const px = -d.y * 4, py = d.x * 4;
+    ctx.fillStyle = COULEURS.bg;
+    ctx.beginPath(); ctx.arc(cx + px, cy + py, 1.8, 0, Math.PI * 2); ctx.arc(cx - px, cy - py, 1.8, 0, Math.PI * 2); ctx.fill();
+
+    if (flash > 0) {
+      ctx.fillStyle = 'rgba(255, 93, 108, ' + (flash * 0.35) + ')';
+      ctx.fillRect(0, 0, TAILLE, TAILLE);
+    }
+  }
+
+  // ---------- Boucle : le serpent avance à pas régulier, le dessin à chaque image ----------
+  let dernier = performance.now();
+  function boucle(t) {
+    const dt = Math.min(t - dernier, 100);
+    dernier = t;
+    if (etat === 'jeu') {
+      cumul += dt;
+      while (cumul >= intervalle && etat === 'jeu') { cumul -= intervalle; pas(); }
+    }
+    if (flash > 0) flash = Math.max(0, flash - dt / 400);
+    dessiner(t);
+    requestAnimationFrame(boucle);
+  }
+
+  serpent = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+  direction = DIRECTIONS.droite; fileDirections = []; jeton = { x: 14, y: 10 }; score = 0; intervalle = 140;
+  majHud();
+  btnJouer.focus({ preventScroll: true });
+  requestAnimationFrame(boucle);
+})();
+</script>
+
+</body></html>
